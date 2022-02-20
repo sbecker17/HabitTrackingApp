@@ -5,7 +5,7 @@ def create_connection(db_file):
     """ create a database connection to a SQLite database"""
     conn = None
     try:
-        conn = sqlite3.connect('db_file')
+        conn = sqlite3.connect(db_file)
         print(sqlite3.version)
         return conn
     except Error as e:
@@ -16,12 +16,13 @@ def close_connection(conn):
 
 # c = conn.cursor()
 def create_habit_table(conn):
-    conn.cursor().execute("""CREATE TABLE habitlist
+    conn.cursor().execute("""CREATE TABLE if not exists habitlist
                             (
                             category text,
                             name text
                             )"""
                          )
+    conn.commit()
 
 def insert_habit(hab, conn):
     c = conn.cursor()
