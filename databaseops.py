@@ -55,5 +55,8 @@ def get_all_habits(cat, conn):
 
 def get_first_habit(conn):
     conn.cursor().execute("SELECT category FROM habitlist LIMIT 3")
-    print(conn.cursor().fetchall())
-    return conn.cursor().fetchall()
+    # print(conn.cursor().fetchall())
+    # return conn.cursor().fetchall()
+    data = conn.cursor().fetchall()
+    for row in data:
+        print(row)

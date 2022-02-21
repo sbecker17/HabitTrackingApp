@@ -28,7 +28,7 @@ class SpartanGrid(GridLayout):
         self.add_widget(self.t_name)
 
         self.add_widget(Label(text="Task Category:"))
-        self.t_cat = TextInput()
+        self.t_cat = TextInput(text = "category")
         self.add_widget(self.t_cat)
 
         self.add_widget(Label(text="Task Count"))

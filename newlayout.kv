@@ -1,0 +1,16 @@
+#:kivy 1.0
+StartLayout:
+    t_name = name_box
+    t_category = cat_box
+    t_count = count_box
+    orientation: 'vertical'
+    height: '100dp'
+    size_hint_y: None
+    Label:
+        text: "Task Name: "
+    Label:
+        text: "Task Category: "
+    Button:
+        text: "Start"
+        on_press: root.open_popup()
+    TextInput:

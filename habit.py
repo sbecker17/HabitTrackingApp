@@ -7,5 +7,5 @@ class Habit:
         self.count = count
 
     def __repr__(self):
-        return "Habit('{}','{}',{})".format(self.category, self.name)
+        return "Habit('{}','{}','{}',{})".format(self.category, self.name, self.count)
         
