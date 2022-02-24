@@ -60,3 +60,7 @@ def get_first_habit(conn):
     data = conn.cursor().fetchall()
     for row in data:
         print(row)
+
+def update_count(count, cat, conn):
+    conn.cursor().execute("UPDATE habitlist SET count = :count WHERE category = :category", {'count': count, 'category': cat})
+    conn.commit()

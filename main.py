@@ -12,9 +12,10 @@ import sqlite3
 from sqlite3 import Error
 
 import os
+#####from HabitTrackingApp.HabitTrackingApp.databaseops import update_count
 
 # i can't figure out how to import all the functions at once -- elena
-from databaseops import create_connection, insert_habit, close_connection, create_habit_table, get_all_habits, get_first_habit
+from databaseops import create_connection, insert_habit, close_connection, create_habit_table, get_all_habits, get_first_habit, update_count
 from habit import Habit
 
 class SpartanGrid(GridLayout):
@@ -43,10 +44,37 @@ class SpartanGrid(GridLayout):
         self.press.bind(on_press=self.show_popup)
         self.add_widget(self.press)
 
+    # def count_up(self, label):
+    #     self.habit1cnt.text = str(int(self.habit1cnt.text)+1)
+    #     #self.habit1cnt.text = str(habit.count)
+    #     print(self.habit1cnt.text)
+        
+    # def click_me(self, instance):
+    #     #print("Name of student is "+self.t_name.text)
+    #     #print("Marks of student are "+self.t_cat.text)
+    #     #print("Gender of student is "+self.t_count.text)
+    #     h1 = Habit(self.t_name.text, self.t_cat.text, 0)
+    #     insert_habit(h1, xconnection)
+    #     get_first_habit(xconnection)
+    #     #print(self.h1.category, self.h1.count)
+    #     self.habit1cnt = Label(text = "0")
+    #     self.habit1 = Button(text = h1.category, on_press = self.count_up)
+    #     print(self.habit1cnt.text)
+    #     self.add_widget(self.habit1)
+    #     self.add_widget(self.habit1cnt)
+
     def count_up(self, label):
         self.habit1cnt.text = str(int(self.habit1cnt.text)+1)
         #self.habit1cnt.text = str(habit.count)
         print(self.habit1cnt.text)
+        update_count(self.habit1cnt.text, self.habit1.text, xconnection)
+
+    def count_down(self, label):
+        self.habit1cnt.text = "0"
+        #self.habit1cnt.text = str(habit.count)
+        print(self.habit1cnt.text)
+        print(self.habit1cnt.text)
+        update_count(self.habit1cnt.text, self.habit1.text, xconnection)
         
     def click_me(self, instance):
         #print("Name of student is "+self.t_name.text)
@@ -57,10 +85,14 @@ class SpartanGrid(GridLayout):
         get_first_habit(xconnection)
         #print(self.h1.category, self.h1.count)
         self.habit1cnt = Label(text = "0")
-        self.habit1 = Button(text = h1.category, on_press = self.count_up)
+        self.habit1 = Label(text = h1.category, bold = True)
+        self.didIt = Button(text = "Did it!", on_press = self.count_up, background_color = [169/255,255/255,221/255,1])
+        self.didnt = Button(text = "Not today", on_press = self.count_down, background_color = [253/255, 129/255, 129/255, 1])
         print(self.habit1cnt.text)
         self.add_widget(self.habit1)
         self.add_widget(self.habit1cnt)
+        self.add_widget(self.didIt)
+        self.add_widget(self.didnt)
 
 
 
