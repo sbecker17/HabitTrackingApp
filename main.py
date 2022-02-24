@@ -43,10 +43,10 @@ class SpartanGrid(GridLayout):
         self.press.bind(on_press=self.show_popup)
         self.add_widget(self.press)
 
-    def count_up(self, h1):
-        self.h1.count = self.h1.count+1
+    def count_up(self, label):
+        self.habit1cnt.text = str(int(self.habit1cnt.text)+1)
         #self.habit1cnt.text = str(habit.count)
-        print(self.h1.count)
+        print(self.habit1cnt.text)
         
     def click_me(self, instance):
         #print("Name of student is "+self.t_name.text)
@@ -56,9 +56,10 @@ class SpartanGrid(GridLayout):
         insert_habit(h1, xconnection)
         get_first_habit(xconnection)
         #print(self.h1.category, self.h1.count)
-        self.habit1 = Button(text = h1.category)#, on_press = get_first_habit(xconnection))
-        self.add_widget(self.habit1)
         self.habit1cnt = Label(text = "0")
+        self.habit1 = Button(text = h1.category, on_press = self.count_up)
+        print(self.habit1cnt.text)
+        self.add_widget(self.habit1)
         self.add_widget(self.habit1cnt)
 
 
@@ -77,7 +78,7 @@ class SpartanGrid(GridLayout):
         self.popup = Popup(title = "Test popup", content = playout)
         self.popup.plabel = Label(text = "add task")
         self.popup.ptext = TextInput()
-        self.popup.pbutton = Button(text = "Close", on_press = self.close_popup)
+        self.popup.pbutton = Button(text = "Cancel", on_press = self.close_popup)
         self.popup.pbutton_add = Button(text = "Add", on_press = self.add_task)
         playout.add_widget(self.popup.plabel)
         playout.add_widget(self.popup.ptext)

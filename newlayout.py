@@ -8,7 +8,9 @@ from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty
+import kivy.properties as kyprops
+from kivymd.app import MDApp
+#from kivy.properties import ObjectProperty
 
 import os
 
@@ -22,16 +24,18 @@ from databaseops import create_connection, insert_habit, close_connection, creat
 from habit import Habit
 
 class StartLayout(BoxLayout):
-    t_name = ObjectProperty()
-    t_category = ObjectProperty()
-    t_count = ObjectProperty
+    t_name = kyprops.ObjectProperty(None)
+    t_category = kyprops.ObjectProperty(None)
+    t_count = kyprops.ObjectProperty(None)
 
     def open_popup(self):
         print("opening")
+        print(self.t_name.text)
 
 
 # class NewLayoutApp(App):
 #     def build(self):
+#         Builder.load_file("/newlayout.kv")
 #         return StartLayout() 
 
 class NewLayoutApp(App):
@@ -42,8 +46,8 @@ if __name__ == "__main__":
     # This line is where we would specify which database the user connects to based on their user information (maybe just a username?)
     # If a matching db already exists, it will connect to that one, if not it creates a new one.
     # TODO: figure out how to query the sqlite file.
-    xconnection = create_connection("sarah.db")
+    #xconnection = create_connection("sarah.db")
     #print(xconnection)
-    create_habit_table(xconnection)
+    #create_habit_table(xconnection)
     NewLayoutApp().run()
-    close_connection(xconnection)
+    #close_connection(xconnection)
