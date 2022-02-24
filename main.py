@@ -65,15 +65,10 @@ class SpartanGrid(GridLayout):
 
     def count_up(self, label):
         self.habit1cnt.text = str(int(self.habit1cnt.text)+1)
-        #self.habit1cnt.text = str(habit.count)
-        print(self.habit1cnt.text)
         update_count(self.habit1cnt.text, self.habit1.text, xconnection)
 
     def count_down(self, label):
         self.habit1cnt.text = "0"
-        #self.habit1cnt.text = str(habit.count)
-        print(self.habit1cnt.text)
-        print(self.habit1cnt.text)
         update_count(self.habit1cnt.text, self.habit1.text, xconnection)
         
     def click_me(self, instance):
@@ -88,7 +83,7 @@ class SpartanGrid(GridLayout):
         self.habit1 = Label(text = h1.category, bold = True)
         self.didIt = Button(text = "Did it!", on_press = self.count_up, background_color = [169/255,255/255,221/255,1])
         self.didnt = Button(text = "Not today", on_press = self.count_down, background_color = [253/255, 129/255, 129/255, 1])
-        print(self.habit1cnt.text)
+        #print(self.habit1cnt.text)
         self.add_widget(self.habit1)
         self.add_widget(self.habit1cnt)
         self.add_widget(self.didIt)
