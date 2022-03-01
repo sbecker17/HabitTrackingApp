@@ -54,12 +54,13 @@ def get_all_habits(cat, conn):
     return conn.cursor().fetchall()
 
 def get_first_habit(conn):
-    conn.cursor().execute("SELECT category FROM habitlist LIMIT 3")
+    conn.cursor().execute("SELECT category FROM habitlist LIMIT 1")
     # print(conn.cursor().fetchall())
     # return conn.cursor().fetchall()
     data = conn.cursor().fetchall()
     for row in data:
         print(row)
+        print(type(conn.cursor().fetchall()))
 
 def update_count(count, cat, conn):
     conn.cursor().execute("UPDATE habitlist SET count = :count WHERE category = :category", {'count': count, 'category': cat})

@@ -9,7 +9,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivy.lang import Builder
 import kivy.properties as kyprops
-from kivymd.app import MDApp
+#from kivymd.app import MDApp
 #from kivy.properties import ObjectProperty
 
 import os
