@@ -1,0 +1,44 @@
+#:kivy 2.0.0
+<StartLayout>:
+    BoxLayout:
+        orientation: 'vertical'
+        
+        Label:
+            id: t_name
+            text: "Name: Annie Wadsworth"
+        
+        Label:
+            text: "Habits: "
+        
+        BoxLayout:
+            orientation: 'vertical'
+        
+        Button:
+            text: "Start"
+            on_press: root.show_popup()
+
+
+<P>:
+    GridLayout:
+        cols: 1
+        pos_hint: {"x":0, "y":0}
+
+        GridLayout:
+            cols: 2
+            size_hint: 1, 1.75
+            
+            Label:
+                text: "Task Name:"
+
+            TextInput:
+                multiline:False
+            
+            Label:
+                text: "Task Category:"
+            
+            TextInput:
+                multiline:False
+
+        Button:
+            text: "Submit"
+            on_press: root.close_popup()
