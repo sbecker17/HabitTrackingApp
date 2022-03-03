@@ -18,6 +18,7 @@ def close_connection(conn):
 def create_habit_table(conn):
     conn.cursor().execute("""CREATE TABLE if not exists habitlist
                             (
+                            username text,
                             category text,
                             name text,
                             count integer,
@@ -26,19 +27,12 @@ def create_habit_table(conn):
                          )
     conn.commit()
 
-def insert_habit(app, hab):
-    conn = app.connection
-    c = app.connection.cursor()
+def insert_habit(hab, conn):
+    c = conn.cursor()
     with conn:
-        c.execute("INSERT INTO habitlist(category, name, count, start_date) VALUES (:category, :name, :count, :start_date)",
-        {'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date})
+        c.execute("INSERT INTO habitlist(username, category, name, count, start_date) VALUES (:username, :category, :name, :count, :start_date)",
+        {'username': hab.username, 'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date})
     conn.commit()
-    #print("1")
-    #print(hab.category)
-    #print(hab.name)
-    #print("2")
-    #print(hab.count)
-    #print("3")
 
 # def insert_habit(conn, hab):
 #     conn.cursor.execute("""INSERT INTO habitlist(category, name, count) VALUES (:category, :name, :count)""", 
@@ -51,9 +45,9 @@ def insert_habit(app, hab):
 #     #print(hab.count)
 #     #print("3s")
 
-def get_all_habits(conn, name):
+def get_all_habits(conn, username):
     c = conn.cursor()
-    c.execute("SELECT * FROM habitlist WHERE name =:name", {'name': name})
+    c.execute("SELECT * FROM habitlist WHERE username =:username", {'username': username})
     # typ = type(conn.cursor().fetchall())
     # print(typ)
     return c.fetchall()
@@ -66,8 +60,8 @@ def get_first_habit(conn):
     return conn.cursor().fetchall()
     
 
-def update_count(count, cat, conn):
-    conn.cursor().execute("UPDATE habitlist SET count = :count WHERE category = :category", {'count': count, 'category': cat})
+def update_count(count, name, conn):
+    conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name", {'count': count, 'name': name})
     conn.commit()
 
 # def check_yes(habit, conn):

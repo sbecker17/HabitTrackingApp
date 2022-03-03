@@ -7,11 +7,14 @@ from kivy.uix.popup import Popup
 from datetime import date
 from habit import Habit
 from databaseops import *
+import sys
 
 class SpartanGrid(GridLayout):
 
     def __init__(self, **kwargs):
-        self.connection = create_connection("elena_work.db")
+        db_name = "elena.db"
+        self.connection = create_connection(db_name)
+        create_habit_table(self.connection)
 
         super(SpartanGrid, self).__init__()
         self.cols = 2
@@ -25,53 +28,45 @@ class SpartanGrid(GridLayout):
         self.add_widget(self.t_cat)
 
         self.press = Button(text="Click me")
-        self.press.bind(on_press=self.click_me)
+        self.press.bind(on_press=lambda x:self.click_me(xconnection = self.connection, db_name = db_name))
         self.add_widget(self.press)
 
         self.press = Button(text="Add Task")
         self.press.bind(on_press=self.show_popup)
         self.add_widget(self.press)
 
-        allHabits = get_all_habits(self.connection, 'category')
-
+        allHabits = get_all_habits(self.connection, 'elena')
+        
         for i in allHabits:
-            h1 = Habit(i[0],i[1],i[2],i[3])
+            
+            h1 = Habit(i[0],i[1],i[2],i[3],i[4])
+            
             self.habit1cnt = Label(text = str(h1.count))
-            self.habit1 = Label(text = h1.category, bold = True)
-            self.didIt = Button(text = "Did it!", background_color = [169/255,255/255,221/255,1])
+            self.habit1 = Label(text = h1.name, bold = True)
+            self.didIt = Button(text = "Did it!", on_press=lambda y:self.count_up(xconnection = self.connection, hab=h1), background_color = [169/255,255/255,221/255,1])
             self.didnt = Button(text = "Not today",  background_color = [253/255, 129/255, 129/255, 1])
-
-# on_press = self.count_up(xconnection),
-# on_press = self.count_down(xconnection),
 
             self.add_widget(self.habit1)
             self.add_widget(self.habit1cnt)
             self.add_widget(self.didIt)
             self.add_widget(self.didnt)
 
-            # self.add_widget(Label(text="Task Category:"))
-            # self.t_cat = TextInput(text = "category")
-            # self.add_widget(self.t_cat)
-
-
-    def count_up(self, xconnection, label):
-        self.habit1cnt.text = str(int(self.habit1cnt.text)+1)
-        update_count(self.habit1cnt.text, self.habit1.text, xconnection)
+    def count_up(self, xconnection, hab):
+        self.habit1cnt.text = str(int(hab.count)+1)
+        update_count(self.habit1cnt.text, hab.name, xconnection)
 
     def count_down(self, xconnection, label):
         self.habit1cnt.text = str(int(self.habit1cnt.text))
         update_count(self.habit1cnt.text, self.habit1.text, xconnection)
         
-    def click_me(self, xconnection, instance):
-        h1 = Habit(self.t_name.text, self.t_cat.text, 0, date.today())
+    def click_me(self, xconnection, db_name):
+        h1 = Habit(db_name[:-3], self.t_cat.text, self.t_name.text, 0, date.today())
         insert_habit(h1, xconnection)
         get_first_habit(xconnection)
-        #print(self.h1.category, self.h1.count)
         self.habit1cnt = Label(text = "0")
-        self.habit1 = Label(text = h1.category, bold = True)
+        self.habit1 = Label(text = h1.name, bold = True)
         self.didIt = Button(text = "Did it!", on_press = self.count_up, background_color = [169/255,255/255,221/255,1])
         self.didnt = Button(text = "Not today", on_press = self.count_down, background_color = [253/255, 129/255, 129/255, 1])
-        #print(self.habit1cnt.text)
         self.add_widget(self.habit1)
         self.add_widget(self.habit1cnt)
         self.add_widget(self.didIt)
