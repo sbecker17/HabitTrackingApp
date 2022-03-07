@@ -6,6 +6,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from SpartanApp import SpartanApp
+from SpartanGrid import SpartanGrid
 
 from databaseops import *
 
@@ -15,4 +16,4 @@ if __name__  == "__main__":
     # create_habit_table(xconnection)
     SpartanApp().run()
 
-    close_connection(SpartanApp.connection)
+    close_connection(SpartanGrid.connection)

@@ -35,16 +35,22 @@ class SpartanGrid(GridLayout):
         self.press.bind(on_press=self.show_popup)
         self.add_widget(self.press)
 
-        allHabits = get_all_habits(self.connection, 'elena')
-        
+        allHabits = []
+        # allHabits = get_all_habits(self.connection, 'elena')
+        print(allHabits)
+        # allHabitsdict = {}
+
         for i in allHabits:
             
+            # allHabitsdict.update({i[0], i[1],i[2],i[3],i[4]})
+            # print(allHabitsdict[0])
             h1 = Habit(i[0],i[1],i[2],i[3],i[4])
             
             self.habit1cnt = Label(text = str(h1.count))
             self.habit1 = Label(text = h1.name, bold = True)
             self.didIt = Button(text = "Did it!", on_press=lambda y:self.count_up(xconnection = self.connection, hab=h1), background_color = [169/255,255/255,221/255,1])
-            self.didnt = Button(text = "Not today",  background_color = [253/255, 129/255, 129/255, 1])
+            self.didnt = Button(text = "Not today", on_press=lambda z:self.count_down(xconnection=self.connection, hab=h1), background_color = [253/255, 129/255, 129/255, 1])
+            # self.didnt = Button(text = "Not today",  background_color = [253/255, 129/255, 129/255, 1])
 
             self.add_widget(self.habit1)
             self.add_widget(self.habit1cnt)
@@ -52,12 +58,21 @@ class SpartanGrid(GridLayout):
             self.add_widget(self.didnt)
 
     def count_up(self, xconnection, hab):
-        self.habit1cnt.text = str(int(hab.count)+1)
-        update_count(self.habit1cnt.text, hab.name, xconnection)
+        if (self.habit1.text == str(hab.name)):
+            self.habit1cnt.text = str(int(hab.count)+1)
+            hab.count = hab.count+1
+            update_count(self.habit1cnt.text, hab.name, xconnection)
+        else:
+            pass
 
-    def count_down(self, xconnection, label):
-        self.habit1cnt.text = str(int(self.habit1cnt.text))
-        update_count(self.habit1cnt.text, self.habit1.text, xconnection)
+    def count_down(self, xconnection, hab):
+        if (self.habit1.text == str(hab.name)):
+            self.habit1cnt.text = "0"
+            hab.count = 0
+            #self.habit1cnt.text = str(int(self.habit1cnt.text))
+            update_count(0, self.habit1.text, xconnection)
+        else: 
+            pass
         
     def click_me(self, xconnection, db_name):
         h1 = Habit(db_name[:-3], self.t_cat.text, self.t_name.text, 0, date.today())
@@ -65,8 +80,8 @@ class SpartanGrid(GridLayout):
         get_first_habit(xconnection)
         self.habit1cnt = Label(text = "0")
         self.habit1 = Label(text = h1.name, bold = True)
-        self.didIt = Button(text = "Did it!", on_press = self.count_up, background_color = [169/255,255/255,221/255,1])
-        self.didnt = Button(text = "Not today", on_press = self.count_down, background_color = [253/255, 129/255, 129/255, 1])
+        self.didIt = Button(text = "Did it!", on_press = lambda x:self.count_up(xconnection = self.connection, hab = h1), background_color = [169/255,255/255,221/255,1])
+        self.didnt = Button(text = "Not today", on_press = lambda y: self.count_down(xconnection=self.connection, hab=h1), background_color = [253/255, 129/255, 129/255, 1])
         self.add_widget(self.habit1)
         self.add_widget(self.habit1cnt)
         self.add_widget(self.didIt)
