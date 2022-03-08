@@ -35,10 +35,10 @@ class SpartanGrid(GridLayout):
         self.press.bind(on_press=self.show_popup)
         self.add_widget(self.press)
 
-        allHabits = []
-        # allHabits = get_all_habits(self.connection, 'elena')
+        # allHabits = []
+        allHabits = get_all_habits(self.connection, 'elena')
         print(allHabits)
-        # allHabitsdict = {}
+        # self.allHabitsdict = {}
 
         for i in allHabits:
             
@@ -93,7 +93,7 @@ class SpartanGrid(GridLayout):
         self.popup.plabel = Label(text = "add task")
         self.popup.ptext = TextInput()
         self.popup.pbutton = Button(text = "Cancel", on_press = self.close_popup)
-        self.popup.pbutton_add = Button(text = "Add", on_press = self.add_task)
+        self.popup.pbutton_add = Button(text = "Add", on_press = lambda y:self.add_task(xconnection=self.connection))
         playout.add_widget(self.popup.plabel)
         playout.add_widget(self.popup.ptext)
         playout.add_widget(self.popup.pbutton)
@@ -104,9 +104,10 @@ class SpartanGrid(GridLayout):
     def close_popup(self, obj):
         self.popup.dismiss()
 
-    def add_task(self, xconnection, obj):
-        h2 = Habit(self.popup.ptext.text, "name", 0)
-        print(h2.category)
+    def add_task(self, xconnection):
+        h2 = Habit("elena","cat", self.popup.ptext.text, 0, date.today())
+        print(h2.name)
         insert_habit(h2, xconnection)
         get_first_habit(xconnection)
+        self.popup.dismiss()
 
