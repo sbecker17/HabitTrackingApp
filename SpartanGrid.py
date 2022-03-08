@@ -9,6 +9,7 @@ from habit import Habit
 from databaseops import *
 import sys
 
+
 class SpartanGrid(GridLayout):
 
     def __init__(self, **kwargs):
@@ -37,15 +38,37 @@ class SpartanGrid(GridLayout):
 
         # allHabits = []
         allHabits = get_all_habits(self.connection, 'elena')
-        print(allHabits)
-        self.allHabitsdict = {}
+        # print(allHabits)
+        # self.allHabitsdict = {}
+
+        # for i in allHabits:
+        #     # user, cat, name, cnt, date
+        #     # name : [user, cat, cnt, date]
+        #     self.allHabitsdict.update({i[2] : [i[0], i[1], i[3], i[4]]})
+        #     print(self.allHabitsdict)
+        #     # allHabitsdict.update({i[0], i[1],i[2],i[3],i[4]})
+        #     # print(allHabitsdict[0])
+
+        # for key,value in self.allHabitsdict.items():
+        #     self.key = Label(text = str(key), bold = True)
+        #     self.keycount = Label(text = str(value[2]))
+           
+            
+        #     # self.habit1cnt = Label(text = str(h1.count))
+        #     # self.habit1 = Label(text = h1.name, bold = True)
+        #     self.didIt = Button(text = "Did it!", on_press=lambda y:self.count_up(xconnection = self.connection, hab=h1), background_color = [169/255,255/255,221/255,1])
+        #     self.didnt = Button(text = "Not today", on_press=lambda z:self.count_down(xconnection=self.connection, hab=h1), background_color = [253/255, 129/255, 129/255, 1])
+        #     # self.didnt = Button(text = "Not today",  background_color = [253/255, 129/255, 129/255, 1])
+
+        #     self.add_widget(self.key)
+        #     self.add_widget(self.keycount)
+        #     self.add_widget(self.didIt)
+        #     self.add_widget(self.didnt)
 
         for i in allHabits:
-            # user, cat, name, cnt, date
-            self.allHabitsdict.update({i[2] : [i[0], i[1], i[3], i[4]]})
-            print(self.allHabitsdict)
             # allHabitsdict.update({i[0], i[1],i[2],i[3],i[4]})
             # print(allHabitsdict[0])
+
             h1 = Habit(i[0],i[1],i[2],i[3],i[4])
             
             self.habit1cnt = Label(text = str(h1.count))
@@ -58,22 +81,6 @@ class SpartanGrid(GridLayout):
             self.add_widget(self.habit1cnt)
             self.add_widget(self.didIt)
             self.add_widget(self.didnt)
-
-
-            # allHabitsdict.update({i[0], i[1],i[2],i[3],i[4]})
-            # print(allHabitsdict[0])
-            # h1 = Habit(i[0],i[1],i[2],i[3],i[4])
-            
-            # self.habit1cnt = Label(text = str(h1.count))
-            # self.habit1 = Label(text = h1.name, bold = True)
-            # self.didIt = Button(text = "Did it!", on_press=lambda y:self.count_up(xconnection = self.connection, hab=h1), background_color = [169/255,255/255,221/255,1])
-            # self.didnt = Button(text = "Not today", on_press=lambda z:self.count_down(xconnection=self.connection, hab=h1), background_color = [253/255, 129/255, 129/255, 1])
-            # # self.didnt = Button(text = "Not today",  background_color = [253/255, 129/255, 129/255, 1])
-
-            # self.add_widget(self.habit1)
-            # self.add_widget(self.habit1cnt)
-            # self.add_widget(self.didIt)
-            # self.add_widget(self.didnt)
                         
 
     def count_up(self, xconnection, hab):
