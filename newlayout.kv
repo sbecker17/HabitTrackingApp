@@ -1,19 +1,108 @@
 #:kivy 1.0
 <StartLayout>:
-    t_name: t_name
-    t_category: t_category
-    t_count: t_count
-    BoxLayout:
-        orientation: 'vertical'
-        height: '100dp'
-        size_hint_y: None
-        Label:
-            text: "Task Name: "
-            id: name_box
-        Label:
-            text: "Task Category: "
-            id: cat_box
-        Button:
-            text: "Start"
-            on_press: root.open_popup()
-        TextInput:
+    # t_name: t_name
+    # t_category: t_category
+    # t_count: t_count
+    # BoxLayout:
+    #         orientation: 'vertical'
+    #         # size:{root.width, root.height}
+    #         height: '200dp'
+    #         width: root.width
+    #         size_hint_x: None
+    #         size_hint_y: None
+    #         row_default_height: 200
+    #         row_force_default: True
+
+    #         # Label:
+    #         #     text: "Task Name: "
+    #         #     id: name_box
+    #         #     # size_hint:0.2,0.2
+
+    #         # Label:
+    #         #     text: "Task Category: "
+    #         #     id: cat_box
+    #         #     # size_hint:0.2,0.2
+
+    #         TextInput:
+    #             multiline:False
+    #             hint_text: "Task Name"
+    #             id: name_box
+
+    #         Button:
+    #             text: "Add"
+    #             # size_hint:0.2,0.2
+    #             # on_press: root.open_popup()
+    #             on_press: root.open_task()
+
+    ScrollView:
+        size_hint_y: 1.0
+        pos_hint: {'x':0, 'y': 0}
+        do_scroll_x: False
+        do_scroll_y: True
+
+        BoxLayout:
+            # cols: 1
+            orientation: 'vertical'
+            # size:{root.width, root.height}
+            height: '200dp'
+            # width: '1000dp' 
+            width: root.width
+            size_hint_x: None
+            size_hint_y: None
+            # row_default_height: 200
+            # row_force_default: True
+
+            # Label:
+            #     text: "Task Name: "
+            #     id: name_box
+            #     # size_hint:0.2,0.2
+
+            # Label:
+            #     text: "Task Category: "
+            #     id: cat_box
+            #     # size_hint:0.2,0.2
+
+            TextInput:
+                multiline:False
+                # hint_text: "Task Name"
+                # id: name_box
+
+            Button:
+                text: "Add"
+                # # size_hint:0.2,0.2
+                # # on_press: root.open_popup()
+                # on_press: root.open_task()
+
+            # TextInput:
+            #     multiline:False
+
+    # BoxLayout:
+    #     orientation: 'vertical'
+    #     # size:{root.width, root.height}
+    #     # height: '200dp'
+    #     # size_hint_x: None
+    #     # size_hint_y: None
+    #     row_default_height: 200
+    #     row_force_default: True
+
+    #     # Label:
+    #     #     text: "Task Name: "
+    #     #     id: name_box
+    #     #     # size_hint:0.2,0.2
+
+    #     # Label:
+    #     #     text: "Task Category: "
+    #     #     id: cat_box
+    #     #     # size_hint:0.2,0.2
+
+    #     TextInput:
+    #         multiline:False
+    #         hint_text: "Task Name"
+
+    #     Button:
+    #         text: "Start"
+    #         # size_hint:0.2,0.2
+    #         on_press: root.open_popup()
+
+    #     # TextInput:
+    #     #     multiline:False
