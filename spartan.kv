@@ -1,0 +1,72 @@
+#:kivy 1.0
+<SpartanGrid>:
+
+    ScrollView:
+        size_hint_y: 1.0
+        pos_hint: {'x':0, 'y': 0}
+        do_scroll_x: False
+        do_scroll_y: True
+    
+        GridLayout:
+            cols: 1
+            size_hint_y: None
+            GridLayout:
+                cols: 2
+                size: root.width, 200
+                size_hint: None, None
+                Label:
+                    text: 'Task Name:'
+                TextInput:
+                    hint_text: 'Task Name'
+                Label:
+                    text: 'Task Category:'
+                TextInput:
+                    hint_text: 'Task Category'
+            Button:
+                text: 'Add Task'
+                size: root.width,100
+                size_hint: None, None
+            GridLayout:
+                cols: 2
+                height: '200dp'
+                Label:
+                    text: 'String Cheese'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text: '30'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text: 'Eat cereal'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text: '1'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text: 'ur mom'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text: '1000'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text: 'whatever'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text:'5'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text: 'no'
+                    size: root.width/2,100
+                    size_hint: None, None
+                Label:
+                    text:'7'
+                    size: root.width/2,100
+                    size_hint: None, None                                                            
+                
