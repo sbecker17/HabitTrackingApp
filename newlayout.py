@@ -75,7 +75,7 @@ class StartLayout(BoxLayout):
     def add_task_group(self):
         # print(self.ids)
         taskL = Label(text=self.habList[self.i].name)
-        self.BoxLayout.add_widget(taskL)
+        self.add_widget(taskL)
         # self.ids.add_widget(Label(text = self.habList[self.i].name))
 
 
