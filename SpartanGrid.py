@@ -87,21 +87,50 @@ class SpartanGrid(GridLayout):
         self.counth8 = Label()
         self.counth9 = Label()
         self.counth10 = Label()
+        self.didIt0 = Button()
+        self.didIt1 = Button()
+        self.didIt2 = Button()
+        self.didIt3 = Button()
+        self.didIt4 = Button()
+        self.didIt5 = Button()
+        self.didIt6 = Button()
+        self.didIt7 = Button()
+        self.didIt8 = Button()
+        self.didIt9 = Button()
+        self.didIt10 = Button()
+        self.didnt0 = Button()
+        self.didnt1 = Button()
+        self.didnt2 = Button()
+        self.didnt3 = Button()
+        self.didnt4 = Button()
+        self.didnt5 = Button()
+        self.didnt6 = Button()
+        self.didnt7 = Button()
+        self.didnt8 = Button()
+        self.didnt9 = Button()
+        self.didnt10 = Button()
         self.habit_name_labels = [self.h0, self.h1, self.h2, self.h3, self.h4, self.h5, self.h6, self.h7, self.h8, self.h9, self.h10]
         self.habit_count_labels = [self.counth0, self.counth1, self.counth2, self.counth3, self.counth4, self.counth5, self.counth6, self.counth7, self.counth8, self.counth9, self.counth10]
-        # check_yes_buttons = [self.didIt0, self.didIt1, self.didIt2, self.didIt3, self.didIt4, self.didIt5, self.didIt6, self.didIt7, self.didIt8, self.didIt9, self.didIt10,
+        self.check_yes_buttons = [self.didIt0, self.didIt1, self.didIt2, self.didIt3, self.didIt4, self.didIt5, self.didIt6, self.didIt7, self.didIt8, self.didIt9, self.didIt10]
         #                     self.didIt11, self.didIt12, self.didIt13, self.didIt14, self.didIt15, self.didIt16, self.didIt17, self.didIt18, self.didIt19]
-        # check_no_buttons = [self.didnt0, self.didnt1, self.didnt2, self.didnt3, self.didnt4, self.didnt5, self.didnt6, self.didnt7, self.didnt8, self.didnt9, self.didnt10,
+        self.check_no_buttons = [self.didnt0, self.didnt1, self.didnt2, self.didnt3, self.didnt4, self.didnt5, self.didnt6, self.didnt7, self.didnt8, self.didnt9, self.didnt10]
         #                     self.didnt11, self.didnt12, self.didnt13, self.didnt14, self.didnt15, self.didnt16, self.didnt17, self.didnt18, self.didnt19]
         
         for i in range(len(allHabits)):
         # for i in range(2):
-            print(self.habit_name_labels[i])
+            print(i)
             print(self.habit_count_labels[i])
+            self.habit_name_labels[i].ids = {str(allHabits[i][2]): self.habit_name_labels[i]}
             self.habit_name_labels[i].text = str(allHabits[i][2])
+            print(self.habit_name_labels[i].ids)
+            print(self.ids)
             self.habit_count_labels[i] = Label(text = str(allHabits[i][3]))
+            self.check_yes_buttons[i] = Button(text = "Did it!", on_press = lambda x:self.count_up_new(xconnection = self.connection, loc = "hi"), background_color = [169/255,255/255,221/255,1])
+            self.check_no_buttons[i] = Button(text = "Didn't", on_press = lambda x:self.count_up_new(xconnection = self.connection), background_color = [253/255, 129/255, 129/255, 1])
             self.add_widget(self.habit_name_labels[i])
             self.add_widget(self.habit_count_labels[i])
+            self.add_widget(self.check_yes_buttons[i])
+            self.add_widget(self.check_no_buttons[i])
 
 
         # for i in allHabits:
@@ -132,8 +161,10 @@ class SpartanGrid(GridLayout):
         else:
             pass
 
-    def count_up_dict(self, xconnection, hab_key):
-        print(hab_key)
+    def count_up_new(self, xconnection, loc):#, hab_key):
+        print("u pressed button ")
+        print(loc)
+        pass
 
 
 
