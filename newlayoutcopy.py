@@ -218,6 +218,23 @@ class SpartanGrid(GridLayout):
         self.add_widget(self.didIt)
         self.add_widget(self.didnt)
 
+    def click_me_new(self, xconnection, db_name):
+        h1 = Habit(db_name[:-3], self.t_cat.text, self.t_name.text, 0, date.today())
+        insert_habit(h1, xconnection)
+        allHabits = get_all_habits(self.connection, db_name[:-3])
+        # print(allHabits)
+        self.habit_count_labels[self.i].text = str(allHabits[self.i][3])
+        self.habit_name_labels[self.i].text = str(allHabits[self.i][2])
+        self.habit_count_labels[self.i] = Label(text = str(allHabits[self.i][3]))
+        self.check_yes_buttons[self.i] = Button(text = "Did it!", on_press = partial(self.count_up_new, self.connection, self.i), background_color = [169/255,255/255,221/255,1])
+        self.check_no_buttons[self.i] = Button(text = "Didn't", on_press = partial(self.count_down_new, self.connection, self.i), background_color = [253/255, 129/255, 129/255, 1])
+        self.add_widget(self.habit_name_labels[self.i])
+        self.add_widget(self.habit_count_labels[self.i])
+        self.add_widget(self.check_yes_buttons[self.i])
+        self.add_widget(self.check_no_buttons[self.i])
+        self.i = self.i+1 
+        pass
+
     def show_popup(self, obj):
         playout = GridLayout(cols = 1)
         self.popup = Popup(title = "Add Task", content = playout)
@@ -242,7 +259,7 @@ class SpartanGrid(GridLayout):
         get_first_habit(xconnection)
         self.popup.dismiss()
 
-    def add_task_new(self, xconnection):
+    def add_task_new(self, xconnection, instance):
         h2 = Habit(self.db_name[:-3],"cat", self.popup.ptext.text, 0, date.today())
         print(h2.name)
         insert_habit(h2, xconnection)
