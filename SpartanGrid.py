@@ -7,6 +7,7 @@ from kivy.uix.popup import Popup
 from datetime import date
 from habit import Habit
 from databaseops import *
+from functools import partial 
 import sys
 
 
@@ -40,30 +41,6 @@ class SpartanGrid(GridLayout):
         allHabits = get_all_habits(self.connection, 'elena')
         # print(allHabits)
         self.allHabitsdict = {}
-
-        for i in allHabits:
-            # user, cat, name, cnt, date
-            # name : [user, cat, cnt, date]
-            self.allHabitsdict.update({i[2] : [i[0], i[1], i[3], i[4]]})
-            # print(self.allHabitsdict)
-            # allHabitsdict.update({i[0], i[1],i[2],i[3],i[4]})
-            # print(self.allHabitsdict[0])
-
-        # for key,value in self.allHabitsdict.items():
-        #     self.key = Label(text = str(key), bold = True)
-        #     self.keycount = Label(text = str(value[2]))
-           
-            
-        #     # self.habit1cnt = Label(text = str(h1.count))
-        #     # self.habit1 = Label(text = h1.name, bold = True)
-        #     self.didIt = Button(text = "Did it!", on_press=lambda y:self.count_up(xconnection = self.connection, hab=h1), background_color = [169/255,255/255,221/255,1])
-        #     self.didnt = Button(text = "Not today", on_press=lambda z:self.count_down(xconnection=self.connection, hab=h1), background_color = [253/255, 129/255, 129/255, 1])
-        #     # self.didnt = Button(text = "Not today",  background_color = [253/255, 129/255, 129/255, 1])
-
-        #     self.add_widget(self.key)
-        #     self.add_widget(self.keycount)
-        #     self.add_widget(self.didIt)
-        #     self.add_widget(self.didnt)
 
         self.h0 = Label()
         self.h1 = Label()
@@ -115,67 +92,51 @@ class SpartanGrid(GridLayout):
         #                     self.didIt11, self.didIt12, self.didIt13, self.didIt14, self.didIt15, self.didIt16, self.didIt17, self.didIt18, self.didIt19]
         self.check_no_buttons = [self.didnt0, self.didnt1, self.didnt2, self.didnt3, self.didnt4, self.didnt5, self.didnt6, self.didnt7, self.didnt8, self.didnt9, self.didnt10]
         #                     self.didnt11, self.didnt12, self.didnt13, self.didnt14, self.didnt15, self.didnt16, self.didnt17, self.didnt18, self.didnt19]
-        
+        self.i=0
         for i in range(len(allHabits)):
-        # for i in range(2):
             print(i)
-            print(self.habit_count_labels[i])
-            self.habit_name_labels[i].ids = {str(allHabits[i][2]): self.habit_name_labels[i]}
+            self.habit_count_labels[i].text = str(allHabits[i][3])
             self.habit_name_labels[i].text = str(allHabits[i][2])
-            print(self.habit_name_labels[i].ids)
-            print(self.ids)
             self.habit_count_labels[i] = Label(text = str(allHabits[i][3]))
-            self.check_yes_buttons[i] = Button(text = "Did it!", on_press = lambda x:self.count_up_new(xconnection = self.connection, loc = "hi"), background_color = [169/255,255/255,221/255,1])
-            self.check_no_buttons[i] = Button(text = "Didn't", on_press = lambda x:self.count_up_new(xconnection = self.connection), background_color = [253/255, 129/255, 129/255, 1])
+            self.check_yes_buttons[i] = Button(text = "Did it!", on_press = partial(self.count_up_new, self.connection, i), background_color = [169/255,255/255,221/255,1])
+            self.check_no_buttons[i] = Button(text = "Didn't", on_press = partial(self.count_down_new, self.connection, i), background_color = [253/255, 129/255, 129/255, 1])
             self.add_widget(self.habit_name_labels[i])
             self.add_widget(self.habit_count_labels[i])
             self.add_widget(self.check_yes_buttons[i])
             self.add_widget(self.check_no_buttons[i])
-
-
-        # for i in allHabits:
-        #     # allHabitsdict.update({i[0], i[1],i[2],i[3],i[4]})
-        #     # print(allHabitsdict[0])
-        #     print(i)
-        #     h1 = Habit(i[0],i[1],i[2],i[3],i[4])
-            
-        #     self.habit1cnt = Label(text = str(h1.count))
-        #     self.habit1 = Label(text = h1.name, bold = True)
-        #     self.didIt = Button(text = "Did it!", on_press=lambda y:self.count_up_dict(xconnection = self.connection, hab_key=i[2]), background_color = [169/255,255/255,221/255,1])
-        #     self.didnt = Button(text = "Not today", on_press=lambda z:self.count_down(xconnection=self.connection, hab=h1), background_color = [253/255, 129/255, 129/255, 1])
-        #     # self.didnt = Button(text = "Not today",  background_color = [253/255, 129/255, 129/255, 1])
-
-        #     self.add_widget(self.habit1)
-        #     self.add_widget(self.habit1cnt)
-        #     self.add_widget(self.didIt)
-        #     self.add_widget(self.didnt)
+            self.i = self.i+1
                         
 
-    def count_up(self, xconnection, hab):
-        print(self.habit1.text)
-        print(str(hab.name))
-        if (self.habit1.text == str(hab.name)):
-            self.habit1cnt.text = str(int(hab.count)+1)
-            hab.count = hab.count+1
-            update_count(self.habit1cnt.text, hab.name, xconnection)
-        else:
-            pass
+    # def count_up(self, xconnection, hab):
+    #     print(self.habit1.text)
+    #     print(str(hab.name))
+    #     if (self.habit1.text == str(hab.name)):
+    #         self.habit1cnt.text = str(int(hab.count)+1)
+    #         hab.count = hab.count+1
+    #         update_count(self.habit1cnt.text, hab.name, xconnection)
+    #     else:
+    #         pass
 
-    def count_up_new(self, xconnection, loc):#, hab_key):
-        print("u pressed button ")
-        print(loc)
+    def count_up_new(self, xconnection, ind, instance):
+        name = self.habit_name_labels[ind].text
+        self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
+        update_count(self.habit_count_labels[ind].text, name, xconnection)
         pass
 
+    # def count_down(self, xconnection, hab):
+    #     if (self.habit1.text == str(hab.name)):
+    #         self.habit1cnt.text = "0"
+    #         hab.count = 0
+    #         #self.habit1cnt.text = str(int(self.habit1cnt.text))
+    #         update_count(0, self.habit1.text, xconnection)
+    #     else: 
+    #         pass
 
-
-    def count_down(self, xconnection, hab):
-        if (self.habit1.text == str(hab.name)):
-            self.habit1cnt.text = "0"
-            hab.count = 0
-            #self.habit1cnt.text = str(int(self.habit1cnt.text))
-            update_count(0, self.habit1.text, xconnection)
-        else: 
-            pass
+    def count_down_new(self, xconnection, ind, instance):
+        name = self.habit_name_labels[ind].text
+        self.habit_count_labels[ind].text = str(0)
+        update_count(0, name, xconnection)
+        pass
         
     def click_me(self, xconnection, db_name):
         h1 = Habit(db_name[:-3], self.t_cat.text, self.t_name.text, 0, date.today())
@@ -196,7 +157,8 @@ class SpartanGrid(GridLayout):
         self.popup.plabel = Label(text = "add task")
         self.popup.ptext = TextInput()
         self.popup.pbutton = Button(text = "Cancel", on_press = self.close_popup)
-        self.popup.pbutton_add = Button(text = "Add", on_press = lambda y:self.add_task(xconnection=self.connection))
+        # self.popup.pbutton_add = Button(text = "Add", on_press = lambda y:self.add_task(xconnection=self.connection))
+        self.popup.pbutton_add = Button(text = "Add", on_press = partial(self.add_task_new, self.connection))
         playout.add_widget(self.popup.plabel)
         playout.add_widget(self.popup.ptext)
         playout.add_widget(self.popup.pbutton)
@@ -207,10 +169,29 @@ class SpartanGrid(GridLayout):
     def close_popup(self, obj):
         self.popup.dismiss()
 
-    def add_task(self, xconnection):
-        h2 = Habit("elena","cat", self.popup.ptext.text, 0, date.today())
+    # def add_task(self, xconnection):
+    #     h2 = Habit("elena","cat", self.popup.ptext.text, 0, date.today())
+    #     print(h2.name)
+    #     insert_habit(h2, xconnection)
+    #     get_first_habit(xconnection)
+    #     self.popup.dismiss()
+
+    def add_task_new(self, xconnection):
+        h2 = Habit(self.db_name[:-3],"cat", self.popup.ptext.text, 0, date.today())
         print(h2.name)
         insert_habit(h2, xconnection)
-        get_first_habit(xconnection)
+        allHabits = get_all_habits(self.connection, self.db_name[:-3])
+        print(allHabits)
         self.popup.dismiss()
+        self.habit_count_labels[self.i].text = str(allHabits[self.i][3])
+        self.habit_name_labels[self.i].text = str(allHabits[self.i][2])
+        self.habit_count_labels[self.i] = Label(text = str(allHabits[self.i][3]))
+        self.check_yes_buttons[self.i] = Button(text = "Did it!", on_press = partial(self.count_up_new, self.connection, self.i), background_color = [169/255,255/255,221/255,1])
+        self.check_no_buttons[self.i] = Button(text = "Didn't", on_press = partial(self.count_down_new, self.connection, self.i), background_color = [253/255, 129/255, 129/255, 1])
+        self.add_widget(self.habit_name_labels[self.i])
+        self.add_widget(self.habit_count_labels[self.i])
+        self.add_widget(self.check_yes_buttons[self.i])
+        self.add_widget(self.check_no_buttons[self.i])
+        self.i = self.i+1 
+        pass
 
