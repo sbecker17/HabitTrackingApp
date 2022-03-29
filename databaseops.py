@@ -64,6 +64,10 @@ def update_count(count, name, conn):
     conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name", {'count': count, 'name': name})
     conn.commit()
 
+def update_name(newname, name, conn):
+    conn.cursor().execute("UPDATE habitlist SET name = :newname WHERE name = :name", {'newname': newname, 'name': name})
+    conn.commit()
+
 # def check_yes(habit, conn):
 #     conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name", {'count': habit.count + 1, 'name': habit.name})
 #     conn.commit()

@@ -65,6 +65,7 @@ class SpartanGrid(GridLayout):
 
         allHabits = get_all_habits(self.connection, 'elena')
 
+        self.tasklayouts = []
         self.habit_name_labels = []
         self.habit_count_labels = []
         self.check_yes_buttons = []
@@ -111,6 +112,8 @@ class SpartanGrid(GridLayout):
             self.task.add_widget(self.check_yes_buttons[i])
             self.task.add_widget(self.check_no_buttons[i])
 
+            self.tasklayouts.append(self.task)
+            # print(self.tasklayouts)
             self.add_widget(self.task)
 
             self.i = self.i+1
@@ -207,7 +210,6 @@ class SpartanGrid(GridLayout):
     #     self.popup.dismiss()
 
     def add_task_new(self, xconnection, instance):
-        
         h2 = Habit(self.db_name[:-3],"cat", self.popup.ptext.text, 0, date.today())
         insert_habit(h2, xconnection)
         allHabits = get_all_habits(self.connection, self.db_name[:-3])
@@ -215,8 +217,9 @@ class SpartanGrid(GridLayout):
 
         self.habit_name_labels.append(Button(
                 text=str(allHabits[self.i][2]),  
-                disabled=True, 
-                background_disabled_normal='background_normal'))
+                # disabled=True, 
+                background_disabled_normal='background_normal',
+                on_press = partial(self.delete_task_popup, self.i)))
 
         self.habit_count_labels.append(Button(
                 text=str(allHabits[self.i][3]),  
@@ -247,34 +250,34 @@ class SpartanGrid(GridLayout):
 
         self.new_task.add_widget(self.check_yes_buttons[self.i])
         self.new_task.add_widget(self.check_no_buttons[self.i])
-        
+        self.tasklayouts.append(self.new_task)
         self.add_widget(self.new_task)
-
         self.i = self.i+1 
         pass
 
     def delete_task(self, i, connection, instance):
         delete_task_db(self.habit_name_labels[i].text, connection)
-        return SpartanGrid()
-        # self.remove_widget(self.new_task)
-        # self.remove_widget(self.habit_name_labels[i])
-        # self.remove_widget(self.habit_count_labels[i])
-        # self.remove_widget(self.check_yes_buttons[i])
-        # self.remove_widget(self.check_no_buttons[i])
-        # self.remove_widget(self.new_task)
+        # return SpartanGrid()
+        # self.remove_widget(self.new_task[i])
+        self.remove_widget(self.habit_name_labels[i])
+        self.remove_widget(self.habit_count_labels[i])
+        self.remove_widget(self.check_yes_buttons[i])
+        self.remove_widget(self.check_no_buttons[i])
+        self.remove_widget(self.tasklayouts[i])
         self.i = self.i - 1
+        self.close_popup_delete(i)
         pass
 
     def show_limit_popup(self):
-        playout = GridLayout(cols = 1)
-        self.popup_limit = Popup(title = "You've reached the limit", content = playout)
+        playout3 = GridLayout(cols = 1)
+        self.popup_limit = Popup(title = "You've reached the limit", content = playout3)
         self.popup_limit.plabel = Label(text = "You have reached the limit of tasks you can add.")
         self.popup_limit.pcount = Label(text = "You currently have " + str(self.i) + " tasks.")
         self.popup_limit.pbutton = Button(text = "Cancel", on_press = self.close_popup_limit)
         # self.popup.pbutton_add = Button(text = "Add", on_press = partial(self.add_task_new, self.connection))
-        playout.add_widget(self.popup_limit.plabel)
-        playout.add_widget(self.popup_limit.pcount)
-        playout.add_widget(self.popup_limit.pbutton)
+        playout3.add_widget(self.popup_limit.plabel)
+        playout3.add_widget(self.popup_limit.pcount)
+        playout3.add_widget(self.popup_limit.pbutton)
         # playout.add_widget(self.popup.pbutton_add)
         #self.popup = Popup(title = "Test popup", contentdel = playout)
         print(self.i)
@@ -284,26 +287,13 @@ class SpartanGrid(GridLayout):
         self.popup_limit.dismiss()
 
     def delete_task_popup(self, i, obj):
-        
-        # self.h0_del = Button()
-        # self.h1_del = Button()
-        # self.h2_del = Button()
-        # self.h3_del = Button()
-        # self.h4_del = Button()
-        # self.h5_del = Button()
-        # self.h6_del = Button()
-        # self.h7_del = Button()
-        # self.h8_del = Button()
-        # self.h9_del = Button()
-        # self.h10_del = Button()
-        # self.hab_del_btns = [self.h0_del, self.h1_del, self.h2_del, self.h3_del, self.h4_del, self.h5_del, self.h6_del, self.h7_del, self.h8_del, self.h9_del, self.h10_del]
         playout2 = GridLayout(cols=1)
         self.popup_delete = Popup(title="Edit a task", content = playout2)
-        self.popup_delete.plabel = Label(text = "Remove each task you no longer want")
+        # self.popup_delete.plabel = Label(text = "Remove each task you no longer want")
         self.popup_delete.pholder =  Button(text = "Close", on_press = self.close_popup_delete)
-        playout2.add_widget(self.popup_delete.plabel)
-        playout2.add_widget(Button(text="Delete " + self.habit_name_labels[i].text, on_press = partial(self.delete_task, i, self.connection), on_release = Clock.schedule_once(self.close_popup_delete, 3)))
-        playout2.add_widget(Button(text= "Edit task name"))
+        # playout2.add_widget(self.popup_delete.plabel)
+        playout2.add_widget(Button(text="Delete Task: " + self.habit_name_labels[i].text, on_press = partial(self.delete_task, i, self.connection))) #, on_release = Clock.schedule_once(self.close_popup_delete, 3)))
+        playout2.add_widget(Button(text= "Edit task name", on_press = partial(self.edit_task_popup, i)))
         # for i in range(len(self.habit_name_labels)):
         #     if (self.habit_name_labels[i].text == ""):
         #         pass
@@ -315,5 +305,26 @@ class SpartanGrid(GridLayout):
 
 
     def close_popup_delete(self, obj):
+        Clock.schedule_once(self.popup_delete.dismiss, 2)
+        # self.popup_delete.dismiss()
 
+    def edit_task_popup(self, i, obj):
+        playout4 = GridLayout(cols=1)
+        self.popup_edit = Popup(title="Edit a task", content = playout4)
+        playout4.add_widget(Label(text="Old task name: " + str(self.habit_name_labels[i].text) + "\n New task name:"))
+        self.popup_edit.ptext = TextInput(hint_text= "New task name")
+        self.popup_edit.pcloser =  Button(text = "Close", on_press = self.close_popup_edit)
+        playout4.add_widget(self.popup_edit.ptext)
+        playout4.add_widget(Button(text="Submit name", on_press = partial(self.update_task_name, i)))
+        playout4.add_widget(self.popup_edit.pcloser)
+        self.popup_edit.open()
+
+    def close_popup_edit(self, obj):
         self.popup_delete.dismiss()
+        Clock.schedule_once(self.popup_edit.dismiss, 2)
+
+
+    def update_task_name(self, i, obj):
+        update_name(self.popup_edit.ptext.text, self.habit_name_labels[i].text, self.connection)
+        self.habit_name_labels[i].text = self.popup_edit.ptext.text
+        self.close_popup_edit(obj)
