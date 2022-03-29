@@ -68,3 +68,7 @@ def update_count(count, name, conn):
 #     conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name", {'count': habit.count + 1, 'name': habit.name})
 #     conn.commit()
     # here, I want to add one to the count of a habit
+
+def delete_task_db(name, conn):
+    conn.cursor().execute("DELETE FROM habitlist WHERE name = :name", {'name': name})
+    conn.commit()
