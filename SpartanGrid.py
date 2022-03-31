@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
 from kivy.uix.textinput import TextInput
@@ -316,23 +317,33 @@ class SpartanGrid(GridLayout):
 
 
     def close_popup_delete(self, obj):
+        self.loading_close_popup(obj)
+        # comment out above line to remove loading screen :)
         Clock.schedule_once(self.popup_delete.dismiss, 2)
         # self.popup_delete.dismiss()
 
-    def loading_close_popup(self, i, obj):
-        playout4 = GridLayout(cols=1)
-        self.popup_lc = Popup(title="Edit a task", content = playout4)
-        playout4.add_widget(Label(text="Old task name: " + str(self.habit_name_labels[i].text) + "\n New task name:"))
-        self.popup_lc.ptext = TextInput(hint_text= "New task name")
-        self.popup_lc.pcloser =  Button(text = "Close", on_press = self.close_popup_edit)
-        playout4.add_widget(self.popup_lc.ptext)
-        playout4.add_widget(Button(text="Submit name", on_press = partial(self.update_task_name, i)))
+    def loading_close_popup(self, obj):
+        playout4 = FloatLayout()
+        self.popup_lc = Popup(title="Loading", content = playout4)
+        self.popup_lc.pcloser =  Button(text = "Loading...", disabled=True, background_disabled_normal='background_normal', background_color=[52/255, 110/255, 235/255, 0.5])
         playout4.add_widget(self.popup_lc.pcloser)
-        self.popup_lc.open()
-
-    def close_popup_edit(self, obj):
-        self.popup_delete.dismiss()
         Clock.schedule_once(self.popup_lc.dismiss, 2)
+        self.popup_lc.open()
+        # Clock.schedule_once(self.popup_lc.dismiss, 2)
+
+    #     playout4 = GridLayout(cols=1)
+    #     self.popup_lc = Popup(title="Edit a task", content = playout4)
+    #     playout4.add_widget(Label(text="Old task name: " + str(self.habit_name_labels[i].text) + "\n New task name:"))
+    #     self.popup_lc.ptext = TextInput(hint_text= "New task name")
+    #     self.popup_lc.pcloser =  Button(text = "Close", on_press = self.close_popup_edit)
+    #     playout4.add_widget(self.popup_lc.ptext)
+    #     playout4.add_widget(Button(text="Submit name", on_press = partial(self.update_task_name, i)))
+    #     playout4.add_widget(self.popup_lc.pcloser)
+    #     self.popup_lc.open()
+
+    # def close_popup_edit(self, obj):
+    #     self.popup_delete.dismiss()
+    #     Clock.schedule_once(self.popup_lc.dismiss, 2)
 
 
     def update_task_name(self, i, obj):
