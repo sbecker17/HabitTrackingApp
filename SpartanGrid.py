@@ -258,13 +258,20 @@ class SpartanGrid(GridLayout):
     def delete_task(self, i, connection, instance):
         delete_task_db(self.habit_name_labels[i].text, connection)
         # return SpartanGrid()
-        # self.remove_widget(self.new_task[i])
+        # self.remove_widget(self.new_task[i]) 
         self.remove_widget(self.habit_name_labels[i])
+        del self.habit_name_labels[i]
         self.remove_widget(self.habit_count_labels[i])
+        del self.habit_count_labels[i]
         self.remove_widget(self.check_yes_buttons[i])
+        del self.check_yes_buttons[i]
         self.remove_widget(self.check_no_buttons[i])
+        del self.check_no_buttons[i]
         self.remove_widget(self.tasklayouts[i])
+        del self.tasklayouts[i]
+        print(self.i)
         self.i = self.i - 1
+        print(self.i)
         self.close_popup_delete(i)
         pass
 
@@ -292,8 +299,12 @@ class SpartanGrid(GridLayout):
         # self.popup_delete.plabel = Label(text = "Remove each task you no longer want")
         self.popup_delete.pholder =  Button(text = "Close", on_press = self.close_popup_delete)
         # playout2.add_widget(self.popup_delete.plabel)
-        playout2.add_widget(Button(text="Delete Task: " + self.habit_name_labels[i].text, on_press = partial(self.delete_task, i, self.connection))) #, on_release = Clock.schedule_once(self.close_popup_delete, 3)))
-        playout2.add_widget(Button(text= "Edit task name", on_press = partial(self.edit_task_popup, i)))
+        playout2.add_widget(Label(text="Edit Task Name: "))
+        self.popup_delete.pname = TextInput(text = self.habit_name_labels[i].text)
+        playout2.add_widget(self.popup_delete.pname)
+        playout2.add_widget(Button(text="Submit name", on_press = partial(self.update_task_name, i)))
+        playout2.add_widget(Button(text="Delete Task: " + self.habit_name_labels[i].text, background_color = [253/255, 129/255, 129/255, 1], on_press = partial(self.delete_task, i, self.connection))) #, on_release = Clock.schedule_once(self.close_popup_delete, 3)))
+        # playout2.add_widget(Button(text= "Edit task name", on_press = partial(self.edit_task_popup, i)))
         # for i in range(len(self.habit_name_labels)):
         #     if (self.habit_name_labels[i].text == ""):
         #         pass
@@ -308,23 +319,23 @@ class SpartanGrid(GridLayout):
         Clock.schedule_once(self.popup_delete.dismiss, 2)
         # self.popup_delete.dismiss()
 
-    def edit_task_popup(self, i, obj):
+    def loading_close_popup(self, i, obj):
         playout4 = GridLayout(cols=1)
-        self.popup_edit = Popup(title="Edit a task", content = playout4)
+        self.popup_lc = Popup(title="Edit a task", content = playout4)
         playout4.add_widget(Label(text="Old task name: " + str(self.habit_name_labels[i].text) + "\n New task name:"))
-        self.popup_edit.ptext = TextInput(hint_text= "New task name")
-        self.popup_edit.pcloser =  Button(text = "Close", on_press = self.close_popup_edit)
-        playout4.add_widget(self.popup_edit.ptext)
+        self.popup_lc.ptext = TextInput(hint_text= "New task name")
+        self.popup_lc.pcloser =  Button(text = "Close", on_press = self.close_popup_edit)
+        playout4.add_widget(self.popup_lc.ptext)
         playout4.add_widget(Button(text="Submit name", on_press = partial(self.update_task_name, i)))
-        playout4.add_widget(self.popup_edit.pcloser)
-        self.popup_edit.open()
+        playout4.add_widget(self.popup_lc.pcloser)
+        self.popup_lc.open()
 
     def close_popup_edit(self, obj):
         self.popup_delete.dismiss()
-        Clock.schedule_once(self.popup_edit.dismiss, 2)
+        Clock.schedule_once(self.popup_lc.dismiss, 2)
 
 
     def update_task_name(self, i, obj):
-        update_name(self.popup_edit.ptext.text, self.habit_name_labels[i].text, self.connection)
-        self.habit_name_labels[i].text = self.popup_edit.ptext.text
-        self.close_popup_edit(obj)
+        update_name(self.popup_delete.pname.text, self.habit_name_labels[i].text, self.connection)
+        self.habit_name_labels[i].text = self.popup_delete.pname.text
+        self.close_popup_delete(obj)
