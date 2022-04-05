@@ -8,6 +8,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from datetime import date
+from datetime import timedelta
 from habit import Habit
 from databaseops import *
 from functools import partial 
@@ -101,11 +102,9 @@ class SpartanGrid(GridLayout):
                     disabled=True, 
                     background_disabled_normal='background_normal', 
                     background_color=[52/255, 110/255, 235/255, 1]))
-        
  
             self.check_yes_buttons.append(Button(text = "Did it!", on_press = partial(self.count_up_new, self.connection, i), background_color = [169/255,255/255,221/255,1]))
             self.check_no_buttons.append(Button(text = "Didn't", on_press = partial(self.count_down_new, self.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
-            
 
             self.task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
             self.task.add_widget(self.habit_name_labels[i])
@@ -133,8 +132,16 @@ class SpartanGrid(GridLayout):
 
     def count_up_new(self, xconnection, ind, instance):
         name = self.habit_name_labels[ind].text
-        self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
-        update_count(self.habit_count_labels[ind].text, name, xconnection)
+        habit_list = get_habit_by_name(xconnection, name)
+        last_mod_date = habit_list[0][5]
+        today = str(date.today())
+
+        if last_mod_date == today:
+            self.habit_name_labels[ind].text = self.habit_name_labels[ind].text + ": Already done!"
+        else:
+            self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
+            update_count(self.habit_count_labels[ind].text, name, xconnection)
+            update_last_mod_date(name, xconnection)
         pass
 
     # def count_down(self, xconnection, hab):
@@ -211,7 +218,10 @@ class SpartanGrid(GridLayout):
     #     self.popup.dismiss()
 
     def add_task_new(self, xconnection, instance):
-        h2 = Habit(self.db_name[:-3],"cat", self.popup.ptext.text, 0, date.today())
+        print("Breakpoint SWAG CHICKEN")
+        today = date.today()
+        yesterday = today - timedelta(days = 1)
+        h2 = Habit(self.db_name[:-3],"cat", self.popup.ptext.text, 0, today, yesterday)
         insert_habit(h2, xconnection)
         allHabits = get_all_habits(self.connection, self.db_name[:-3])
         self.popup.dismiss()

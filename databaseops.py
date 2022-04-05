@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Error
+from datetime import date
 
 def create_connection(db_file):
     """ create a database connection to a SQLite database"""
@@ -22,7 +23,8 @@ def create_habit_table(conn):
                             category text,
                             name text,
                             count integer,
-                            start_date date
+                            start_date date,
+                            last_modified_date date
                             )"""
                          )
     conn.commit()
@@ -30,8 +32,8 @@ def create_habit_table(conn):
 def insert_habit(hab, conn):
     c = conn.cursor()
     with conn:
-        c.execute("INSERT INTO habitlist(username, category, name, count, start_date) VALUES (:username, :category, :name, :count, :start_date)",
-        {'username': hab.username, 'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date})
+        c.execute("INSERT INTO habitlist(username, category, name, count, start_date, last_modified_date) VALUES (:username, :category, :name, :count, :start_date, :last_modified_date)",
+        {'username': hab.username, 'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date, 'last_modified_date':hab.last_modified_date})
     conn.commit()
 
 # def insert_habit(conn, hab):
@@ -52,6 +54,10 @@ def get_all_habits(conn, username):
     # print(typ)
     return c.fetchall()
 
+def get_habit_by_name(conn, name):
+    c = conn.cursor()
+    c.execute("SELECT * FROM habitlist WHERE name =:name", {'name': name})
+    return c.fetchall()
 
 def get_first_habit(conn):
     conn.cursor().execute("SELECT * FROM habitlist LIMIT 1")
@@ -59,13 +65,16 @@ def get_first_habit(conn):
     # return conn.cursor().fetchall()
     return conn.cursor().fetchall()
     
-
 def update_count(count, name, conn):
     conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name", {'count': count, 'name': name})
     conn.commit()
 
 def update_name(newname, name, conn):
     conn.cursor().execute("UPDATE habitlist SET name = :newname WHERE name = :name", {'newname': newname, 'name': name})
+    conn.commit()
+
+def update_last_mod_date(name, conn):
+    conn.cursor().execute("UPDATE habitlist SET last_modified_date = :newdate WHERE name = :name", {'newdate': date.today(), 'name': name})
     conn.commit()
 
 # def check_yes(habit, conn):
