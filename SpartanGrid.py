@@ -8,6 +8,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from datetime import date
+from datetime import datetime
 from datetime import timedelta
 from habit import Habit
 from databaseops import *
@@ -59,13 +60,13 @@ class SpartanGrid(GridLayout):
         self.homepage.add_widget(self.homepage.press)
 
         self.homepage.press = Button(text="View __")
-        self.homepage.press.bind(on_press=self.show_popup)
+        self.homepage.press.bind(on_press=self.show_quitting_popup)
         self.homepage.add_widget(self.homepage.press)
 
         self.add_widget(self.homepage)
 
 
-        allHabits = get_all_habits(self.connection, 'elena')
+        allHabits = get_all_habits(self.connection, 'elena', 'continue')
 
         self.tasklayouts = []
         self.habit_name_labels = []
@@ -73,6 +74,7 @@ class SpartanGrid(GridLayout):
         self.check_yes_buttons = []
         self.check_no_buttons = []
         self.i=0
+        self.quit_i=0
         for i in range(len(allHabits)):
             
             if (i%2==0):
@@ -134,15 +136,30 @@ class SpartanGrid(GridLayout):
         name = self.habit_name_labels[ind].text
         habit_list = get_habit_by_name(xconnection, name)
         last_mod_date = habit_list[0][5]
+        category = habit_list[0][2]
         today = str(date.today())
 
-        if last_mod_date == today:
+        if (last_mod_date == today):
             self.habit_name_labels[ind].text = self.habit_name_labels[ind].text + ": Already done!"
         else:
             self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
-            update_count(self.habit_count_labels[ind].text, name, xconnection)
+            update_count(self.habit_count_labels[ind].text, name, category, xconnection)
             update_last_mod_date(name, xconnection)
         pass
+
+    # def count_up_new_quit(self, xconnection, ind, instance):
+    #     name = self.habit_name_labels[ind].text
+    #     habit_list = get_habit_by_name(xconnection, name)
+    #     last_mod_date = habit_list[0][5]
+    #     today = str(date.today())
+
+    #     if last_mod_date == today:
+    #         self.habit_name_labels[ind].text = self.habit_name_labels[ind].text + ": Already done!"
+    #     else:
+    #         self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
+    #         update_count(self.habit_count_labels[ind].text, name, xconnection)
+    #         update_last_mod_date(name, xconnection)
+    #     pass
 
     # def count_down(self, xconnection, hab):
     #     if (self.habit1.text == str(hab.name)):
@@ -153,41 +170,17 @@ class SpartanGrid(GridLayout):
     #     else: 
     #         pass
 
+    # def count_down_new(self, xconnection, ind, instance):
+    #     name = self.habit_name_labels[ind].text
+    #     self.habit_count_labels[ind].text = str(0)
+    #     update_count(0, name, xconnection)
+    #     pass
+
     def count_down_new(self, xconnection, ind, instance):
         name = self.habit_name_labels[ind].text
         self.habit_count_labels[ind].text = str(0)
-        update_count(0, name, xconnection)
+        update_count(0, name, 'continue', xconnection)
         pass
-        
-    # def click_me(self, xconnection, db_name):
-    #     h1 = Habit(db_name[:-3], self.t_cat.text, self.t_name.text, 0, date.today())
-    #     insert_habit(h1, xconnection)
-    #     get_first_habit(xconnection)
-    #     self.habit1cnt = Label(text = "0")
-    #     self.habit1 = Label(text = h1.name, bold = True)
-    #     self.didIt = Button(text = "Did it!", on_press = lambda x:self.count_up(xconnection = self.connection, hab = h1), background_color = [169/255,255/255,221/255,1])
-    #     self.didnt = Button(text = "Not today", on_press = lambda y: self.count_down(xconnection=self.connection, hab=h1), background_color = [253/255, 129/255, 129/255, 1])
-    #     self.add_widget(self.habit1)
-    #     self.add_widget(self.habit1cnt)
-    #     self.add_widget(self.didIt)
-    #     self.add_widget(self.didnt)
-
-    # def click_me_new(self, xconnection, db_name):
-    #     h1 = Habit(db_name[:-3], self.homepage.t_cat.text, self.homepage.t_name.text, 0, date.today())
-    #     insert_habit(h1, xconnection)
-    #     allHabits = get_all_habits(self.connection, db_name[:-3])
-    #     # print(allHabits)
-    #     self.habit_count_labels[self.i].text = str(allHabits[self.i][3])
-    #     self.habit_name_labels[self.i].text = str(allHabits[self.i][2])
-    #     self.habit_count_labels[self.i] = Label(text = str(allHabits[self.i][3]))
-    #     self.check_yes_buttons.append(Button(text = "Did it!", on_press = partial(self.count_up_new, self.connection, self.i), background_color = [169/255,255/255,221/255,1]))
-    #     self.check_no_buttons.append(Button(text = "Didn't", on_press = partial(self.count_down_new, self.connection, self.i), background_color = [253/255, 129/255, 129/255, 1]))
-    #     self.add_widget(self.habit_name_labels[self.i])
-    #     self.add_widget(self.habit_count_labels[self.i])
-    #     self.add_widget(self.check_yes_buttons[self.i])
-    #     self.add_widget(self.check_no_buttons[self.i])
-    #     self.i = self.i+1 
-    #     pass
 
     def show_popup(self, obj):
         playout = GridLayout(cols = 2, padding=[200, 200, 200, 200], rows_minimum={0:200})
@@ -221,9 +214,9 @@ class SpartanGrid(GridLayout):
         print("Breakpoint SWAG CHICKEN")
         today = date.today()
         yesterday = today - timedelta(days = 1)
-        h2 = Habit(self.db_name[:-3],"cat", self.popup.ptext.text, 0, today, yesterday)
+        h2 = Habit(self.db_name[:-3],"continue", self.popup.ptext.text, 0, today, yesterday, 0)
         insert_habit(h2, xconnection)
-        allHabits = get_all_habits(self.connection, self.db_name[:-3])
+        allHabits = get_all_habits(self.connection, self.db_name[:-3], 'continue')
         self.popup.dismiss()
 
         self.habit_name_labels.append(Button(
@@ -238,6 +231,8 @@ class SpartanGrid(GridLayout):
                 background_disabled_normal='background_normal'))
 
         if (self.i%2==0):
+            h3 = Habit("elena", "quit", str(self.i-1), 0, today, today, 0)
+            insert_habit(h3, xconnection)
             self.habit_name_labels[self.i].background_color = [52/255, 110/255, 235/255, 0.5]
             self.habit_count_labels[self.i].background_color = [52/255, 110/255, 235/255, 0.5]
         else:
@@ -360,3 +355,145 @@ class SpartanGrid(GridLayout):
         update_name(self.popup_delete.pname.text, self.habit_name_labels[i].text, self.connection)
         self.habit_name_labels[i].text = self.popup_delete.pname.text
         self.close_popup_delete(obj)
+
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------
+# ---------------------------- Quitting is a lot of ~work~ -----------------------------
+# ------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+    def show_quitting_popup(self, obj):
+        # return self
+        self.quitlayout = GridLayout(cols=2)
+        self.quithomepage = Popup(title="Quit tasks", content = self.quitlayout)
+        self.quithomepage.addbtn = Button(text="Quit New Task")
+        self.quithomepage.addbtn.bind(on_press=self.add_quit_popup)
+        self.quitlayout.add_widget(self.quithomepage.addbtn)
+
+        self.quithomepage.press = Button(text="Go Back")
+        self.quithomepage.press.bind(on_press=self.quithomepage.dismiss)
+        self.quitlayout.add_widget(self.quithomepage.press)
+
+        # quitlayout.add_widget(self.quithomepage)
+
+        quit_allHabits = get_all_habits(self.connection, 'elena', 'quit')
+
+        self.quit_habit_name_labels = []
+        self.quit_habit_count_labels = []
+        self.quit_max_streak_labels = []
+        self.quit_check_no_buttons = []
+        for i in range(len(quit_allHabits)):
+            if (i%2==0):
+                self.quit_habit_name_labels.append(Button(
+                    text=str(quit_allHabits[i][2]),  
+                    # disabled=True, 
+                    background_disabled_normal='background_normal', 
+                    background_color=[52/255, 110/255, 235/255, 0.5], #))
+                    on_press = partial(self.delete_quit_task_popup, i)))
+                if (quit_allHabits[i][5] != quit_allHabits[i][6]):
+                    self.quit_habit_count_labels.append(Button(
+                        text=str(quit_allHabits[i][3]+1),  
+                        disabled=True, 
+                        background_disabled_normal='background_normal', 
+                        background_color=[52/255, 110/255, 235/255, 0.5]))
+                    # insert code to update db streak count 
+                else:
+                    self.quit_habit_count_labels.append(Button(
+                        text=str(quit_allHabits[i][3]),  
+                        disabled=True, 
+                        background_disabled_normal='background_normal', 
+                        background_color=[52/255, 110/255, 235/255, 0.5]))
+
+            else:
+                self.quit_habit_name_labels.append(Button(
+                    text=str(quit_allHabits[i][2]),  
+                    # disabled=True, 
+                    background_disabled_normal='background_normal', 
+                    background_color=[52/255, 110/255, 235/255, 1],#))
+                    on_press = partial(self.delete_quit_task_popup, i)))
+                
+                self.quit_habit_count_labels.append(Button(
+                    text=str(quit_allHabits[i][3]),  
+                    disabled=True, 
+                    background_disabled_normal='background_normal', 
+                    background_color=[52/255, 110/255, 235/255, 1]))
+ 
+            self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(quit_allHabits[i][6]) + "\n Earned on: " + str(quit_allHabits[i][5]), disabled=True, background_disabled_normal='background_normal', background_color = [169/255,255/255,221/255,.5]))
+            self.quit_check_no_buttons.append(Button(text = "fuckied it up :(", on_press = partial(self.count_down_quit, self.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
+
+            # self.quit_task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
+            self.quitlayout.add_widget(self.quit_habit_name_labels[i])
+            self.quitlayout.add_widget(self.quit_habit_count_labels[i])
+            self.quitlayout.add_widget(self.quit_max_streak_labels[i])
+            self.quitlayout.add_widget(self.quit_check_no_buttons[i])
+
+            # self.quit_tasklayouts.append(self.quit_task)
+            # print(self.quit_tasklayouts)
+            # self.quithomepage.add_widget(self.quit_task)
+            new_counts = partial(self.count_up_by_days, self.connection, i)
+            new_counts(i)
+
+            self.quit_i = self.quit_i+1
+        self.quithomepage.open()
+
+
+    def delete_quit_task_popup(self, i, obj):
+        self.quithomepage.dismiss()
+
+    def count_down_quit(self, xconnection, i):
+        self.quithomepage.dismiss()
+
+    def add_quit_popup(self):
+        self.quithomepage.dismiss()
+
+    def count_up_by_days(self, xconnection, ind, instance):
+        name = self.quit_habit_name_labels[ind].text
+        habit_list = get_habit_by_name(xconnection, name)
+        last_mod_date = datetime.strptime((habit_list[0][5]), "%Y-%m-%d").date()
+        # category = habit_list[0][2]
+        today = date.today()
+        print((today-last_mod_date).days)
+        if (today-last_mod_date).days != 0:
+            self.quit_habit_count_labels[ind].text = str((today-last_mod_date).days)
+            update_count(self.quit_habit_count_labels[ind].text, name, 'quit', xconnection)
+        else:
+            self.quit_habit_count_labels[ind].text = str(habit_list[0][3])
+        
+        if (today-last_mod_date).days >= habit_list[0][6]:
+            self.quit_max_streak_labels[ind].text = "       Max Streak: " + str((today-last_mod_date).days) + "\n Earned on: " + str(date.today())
+        pass
+
+
+
+# console debugging 
+# import datetime
+# d1 = datetime.date.today()
+#                  datetime.date(2022, 4, 5)
+# d2 = datetime.datetime.strptime("2022-04-02", "%Y-%m-%d").date()
+# (d1-d2).days
+
+
+
+    def count_up_new(self, xconnection, ind, instance):
+        name = self.habit_name_labels[ind].text
+        habit_list = get_habit_by_name(xconnection, name)
+        last_mod_date = habit_list[0][5]
+        category = habit_list[0][2]
+        today = str(date.today())
+
+        if (last_mod_date == today):
+            self.habit_name_labels[ind].text = self.habit_name_labels[ind].text + ": Already done!"
+        else:
+            self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
+            update_count(self.habit_count_labels[ind].text, name, category, xconnection)
+            update_last_mod_date(name, xconnection)
+        pass

@@ -24,7 +24,8 @@ def create_habit_table(conn):
                             name text,
                             count integer,
                             start_date date,
-                            last_modified_date date
+                            last_modified_date date,
+                            max_quit_count integer
                             )"""
                          )
     conn.commit()
@@ -32,8 +33,8 @@ def create_habit_table(conn):
 def insert_habit(hab, conn):
     c = conn.cursor()
     with conn:
-        c.execute("INSERT INTO habitlist(username, category, name, count, start_date, last_modified_date) VALUES (:username, :category, :name, :count, :start_date, :last_modified_date)",
-        {'username': hab.username, 'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date, 'last_modified_date':hab.last_modified_date})
+        c.execute("INSERT INTO habitlist(username, category, name, count, start_date, last_modified_date, max_quit_count) VALUES (:username, :category, :name, :count, :start_date, :last_modified_date, :max_quit_count)",
+        {'username': hab.username, 'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date, 'last_modified_date':hab.last_modified_date, 'max_quit_count':hab.max_quit_count})
     conn.commit()
 
 # def insert_habit(conn, hab):
@@ -47,9 +48,16 @@ def insert_habit(hab, conn):
 #     #print(hab.count)
 #     #print("3s")
 
-def get_all_habits(conn, username):
+# def get_all_habits(conn, username):
+#     c = conn.cursor()
+#     c.execute("SELECT * FROM habitlist WHERE username =:username", {'username': username})
+#     # typ = type(conn.cursor().fetchall())
+#     # print(typ)
+#     return c.fetchall()
+
+def get_all_habits(conn, username, category):
     c = conn.cursor()
-    c.execute("SELECT * FROM habitlist WHERE username =:username", {'username': username})
+    c.execute("SELECT * FROM habitlist WHERE username =:username AND category =:category", {'username': username, 'category':category})
     # typ = type(conn.cursor().fetchall())
     # print(typ)
     return c.fetchall()
@@ -65,8 +73,12 @@ def get_first_habit(conn):
     # return conn.cursor().fetchall()
     return conn.cursor().fetchall()
     
-def update_count(count, name, conn):
-    conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name", {'count': count, 'name': name})
+# def update_count(count, name, conn):
+#     conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name", {'count': count, 'name': name})
+#     conn.commit()
+
+def update_count(count, name, category, conn):
+    conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name AND category=:category", {'count': count, 'name': name, 'category':category})
     conn.commit()
 
 def update_name(newname, name, conn):
