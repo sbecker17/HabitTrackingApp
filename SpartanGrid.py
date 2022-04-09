@@ -1,6 +1,5 @@
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle
@@ -12,26 +11,31 @@ from datetime import datetime
 from datetime import timedelta
 from habit import Habit
 from databaseops import *
+from homepagebuttonfuncs import *
 from functools import partial 
 from kivy.clock import Clock
-import sys
-
 
 class SpartanGrid(GridLayout):
 
-    def __init__(self, **kwargs):
-        self.db_name = "elena.db"
-        self.connection = create_connection(self.db_name)
-        create_habit_table(self.connection)
+    def __init__(self, db, **kwargs):    #, **kwargs
 
         super(SpartanGrid, self).__init__()
         self.cols=1
         self.padding=[50,50,50,50]
 
-        # header = Label(
-        #     text="[u][b][size=100][color=346eeb]Habit Tracker[/color][/size][/b][/u]", 
-        #     markup=True)
-        
+        # login = TextInput(hint_text="Enter your username")
+        # self.add_widget(login)
+        # connect_button = Button(
+        #     text="Login",
+        #     on_press = lambda y:super(SpartanGrid, self).__init__()
+        # )
+        # self.add_widget(connect_button)
+
+        self.db_name = "elena.db"
+        self.connection = create_connection(self.db_name)
+        create_habit_table(self.connection)
+
+       
         header = Button(
             text="Habit Tracker", 
             font_size="35sp", 
@@ -43,18 +47,6 @@ class SpartanGrid(GridLayout):
         
         self.homepage=GridLayout(cols=2)
 
-        # self.homepage.add_widget(Label(text="Task Name:"))
-        # self.homepage.t_name = TextInput(hint_text="name")
-        # self.homepage.add_widget(self.homepage.t_name)
-
-        # self.homepage.add_widget(Label(text="Task Category:"))
-        # self.homepage.t_cat = TextInput(hint_text = "category")
-        # self.homepage.add_widget(self.homepage.t_cat)
-
-        # self.homepage.press = Button(text="Click me")
-        # self.homepage.press.bind(on_press=lambda x:self.click_me_new(xconnection = self.connection, db_name = self.db_name))
-        # self.homepage.add_widget(self.homepage.press)
-
         self.homepage.press = Button(text="Add Task")
         self.homepage.press.bind(on_press=self.show_popup)
         self.homepage.add_widget(self.homepage.press)
@@ -65,8 +57,7 @@ class SpartanGrid(GridLayout):
 
         self.add_widget(self.homepage)
 
-
-        allHabits = get_all_habits(self.connection, 'elena', 'continue')
+        allHabits = get_all_habits(self.connection, self.db_name[:-3], 'continue')
 
         self.tasklayouts = []
         self.habit_name_labels = []
@@ -119,18 +110,6 @@ class SpartanGrid(GridLayout):
             self.add_widget(self.task)
 
             self.i = self.i+1
-        
-                        
-
-    # def count_up(self, xconnection, hab):
-    #     print(self.habit1.text)
-    #     print(str(hab.name))
-    #     if (self.habit1.text == str(hab.name)):
-    #         self.habit1cnt.text = str(int(hab.count)+1)
-    #         hab.count = hab.count+1
-    #         update_count(self.habit1cnt.text, hab.name, xconnection)
-    #     else:
-    #         pass
 
     def count_up_new(self, xconnection, ind, instance):
         name = self.habit_name_labels[ind].text
@@ -146,35 +125,6 @@ class SpartanGrid(GridLayout):
             update_count(self.habit_count_labels[ind].text, name, category, xconnection)
             update_last_mod_date(name, xconnection)
         pass
-
-    # def count_up_new_quit(self, xconnection, ind, instance):
-    #     name = self.habit_name_labels[ind].text
-    #     habit_list = get_habit_by_name(xconnection, name)
-    #     last_mod_date = habit_list[0][5]
-    #     today = str(date.today())
-
-    #     if last_mod_date == today:
-    #         self.habit_name_labels[ind].text = self.habit_name_labels[ind].text + ": Already done!"
-    #     else:
-    #         self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
-    #         update_count(self.habit_count_labels[ind].text, name, xconnection)
-    #         update_last_mod_date(name, xconnection)
-    #     pass
-
-    # def count_down(self, xconnection, hab):
-    #     if (self.habit1.text == str(hab.name)):
-    #         self.habit1cnt.text = "0"
-    #         hab.count = 0
-    #         #self.habit1cnt.text = str(int(self.habit1cnt.text))
-    #         update_count(0, self.habit1.text, xconnection)
-    #     else: 
-    #         pass
-
-    # def count_down_new(self, xconnection, ind, instance):
-    #     name = self.habit_name_labels[ind].text
-    #     self.habit_count_labels[ind].text = str(0)
-    #     update_count(0, name, xconnection)
-    #     pass
 
     def count_down_new(self, xconnection, ind, instance):
         name = self.habit_name_labels[ind].text
@@ -203,15 +153,7 @@ class SpartanGrid(GridLayout):
     def close_popup(self, obj):
         self.popup.dismiss()
 
-    # def add_task(self, xconnection):
-    #     h2 = Habit("elena","cat", self.popup.ptext.text, 0, date.today())
-    #     print(h2.name)
-    #     insert_habit(h2, xconnection)
-    #     get_first_habit(xconnection)
-    #     self.popup.dismiss()
-
     def add_task_new(self, xconnection, instance):
-        print("Breakpoint SWAG CHICKEN")
         today = date.today()
         yesterday = today - timedelta(days = 1)
         h2 = Habit(self.db_name[:-3],"continue", self.popup.ptext.text, 0, today, yesterday, 0)
@@ -252,7 +194,6 @@ class SpartanGrid(GridLayout):
         #self.yn_buttons.add_widget(self.check_yes_buttons[self.i])
         #self.yn_buttons.add_widget(self.check_no_buttons[self.i])
         #self.new_task.add_widget(self.yn_buttons)
-
 
         self.new_task.add_widget(self.check_yes_buttons[self.i])
         self.new_task.add_widget(self.check_no_buttons[self.i])
@@ -357,19 +298,9 @@ class SpartanGrid(GridLayout):
         self.close_popup_delete(obj)
 
 
-
-
-
-
 # ------------------------------------------------------------------------------------------------
-# ---------------------------- Quitting is a lot of ~work~ -----------------------------
+# ---------------------------- Quitting is a lot of ~work~ ---------------------------------------
 # ------------------------------------------------------------------------------------------------
-
-
-
-
-
-
 
     def show_quitting_popup(self, obj):
         # return self
@@ -472,16 +403,12 @@ class SpartanGrid(GridLayout):
             self.quit_max_streak_labels[ind].text = "       Max Streak: " + str((today-last_mod_date).days) + "\n Earned on: " + str(date.today())
         pass
 
-
-
 # console debugging 
 # import datetime
 # d1 = datetime.date.today()
 #                  datetime.date(2022, 4, 5)
 # d2 = datetime.datetime.strptime("2022-04-02", "%Y-%m-%d").date()
 # (d1-d2).days
-
-
 
     def count_up_new(self, xconnection, ind, instance):
         name = self.habit_name_labels[ind].text
