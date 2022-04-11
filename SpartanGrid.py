@@ -1,3 +1,4 @@
+from pyexpat.errors import XML_ERROR_XML_DECL
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -104,8 +105,16 @@ class SpartanGrid(GridLayout):
                     disabled=True, 
                     background_disabled_normal='atlas://data/images/defaulttheme/button', 
                     background_color=[52/255, 110/255, 235/255, 1]))
+
+            last_mod_date = allHabits[0][5]
+            category = allHabits[0][1]
+            today = str(date.today())
  
             self.check_yes_buttons.append(Button(text = "Did it!", on_press = partial(self.count_up_new, self.connection, i), background_color = [169/255,255/255,221/255,1]))
+            if (allHabits[i][5] == str(date.today())): 
+                self.check_yes_buttons[i].text = "Done!"
+                self.check_yes_buttons[i].disabled = True
+                self.check_yes_buttons[i].background_color = [169/255,255/255,221/255,1]
             self.check_no_buttons.append(Button(text = "Didn't", on_press = partial(self.count_down_new, self.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
 
             self.task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
@@ -133,25 +142,27 @@ class SpartanGrid(GridLayout):
     #         pass
 
     def count_up_new(self, xconnection, ind, instance):
+        button_name = self.check_yes_buttons[ind].text
         name = self.habit_name_labels[ind].text
-        print(name)
-        d = ": Already done!" in name
-        print(d)
+        # print(name)
+        # d = ": Already done!" in button_name
+        # print(d)
         # if (": Already done!" not in name):
-        if (name.find(": Already done!") != -1):
-            print("this was true")
+        if (button_name.find("Done!") != -1):
+            # print("this was true")
             return
         else:
-            print(": Already done!" in name)
+            # print(": Already done!" in name)
             habit_list = get_habit_by_name(xconnection, name)
             last_mod_date = habit_list[0][5]
             category = habit_list[0][1]
-            print(category)
+            # print(category)
             today = str(date.today())
             if (last_mod_date == today):
-                self.habit_name_labels[ind].text = self.habit_name_labels[ind].text + ": Already done!"
+                self.check_yes_buttons[ind].text = "Done!"
             else:
                 self.habit_count_labels[ind].text = str(int(self.habit_count_labels[ind].text) + 1)
+                self.check_yes_buttons[ind].text = "Done!"
                 update_count(self.habit_count_labels[ind].text, name, category, xconnection)
                 update_last_mod_date(name, xconnection)
 
@@ -198,7 +209,7 @@ class SpartanGrid(GridLayout):
                     disabled=True, 
                     background_disabled_normal='background_normal', 
                     background_color=[52/255, 110/255, 235/255, 0.5])
-        self.popup.ptext = TextInput()
+        self.popup.ptext = TextInput(write_tab = False, multiline = False, on_text_validate = partial(self.add_task_new, self.connection))
         self.popup.pbutton = Button(text = "Cancel", on_press = self.close_popup)
         # self.popup.pbutton_add = Button(text = "Add", on_press = lambda y:self.add_task(xconnection=self.connection))
         self.popup.pbutton_add = Button(text = "Add", on_press = partial(self.add_task_new, self.connection))
@@ -271,9 +282,9 @@ class SpartanGrid(GridLayout):
 
     def delete_task(self, i, connection, instance):
         delete_task_db(self.habit_name_labels[i].text, connection)
-        # if (self.i-1) != (i):
-        #     self.habit_name_labels[i+1].background_color = self.habit_name_labels[i].background_color
-        #     self.habit_count_labels[i+1].background_color = self.habit_count_labels[i].background_color
+        if (self.i-1) != (i):
+            self.habit_name_labels[i+1].background_color = self.habit_name_labels[i].background_color
+            self.habit_count_labels[i+1].background_color = self.habit_count_labels[i].background_color
         # return SpartanGrid()
         # self.remove_widget(self.new_task[i]) 
         self.remove_widget(self.habit_name_labels[i])
@@ -335,7 +346,7 @@ class SpartanGrid(GridLayout):
         playout2 = GridLayout(cols=1, padding=[200,100,200,200])
         print("the i associated with task", self.habit_name_labels[i].text, " is: " + str(i))
         self.popup_delete = Popup(title="Edit a task", content = playout2)
-        self.popup_delete.pname = TextInput(text = self.habit_name_labels[i].text)
+        self.popup_delete.pname = TextInput(text = self.habit_name_labels[i].text, multiline = False, on_text_validate = partial(self.add_task_new, self.connection))
         close_button = GridLayout(cols=6)
         close_button.add_widget(Label())
         close_button.add_widget(Label())
@@ -417,7 +428,7 @@ class SpartanGrid(GridLayout):
 
         # quitlayout.add_widget(self.quithomepage)
 
-        quit_allHabits = get_all_habits(self.connection, 'elena', 'quit')
+        quit_allHabits = get_all_habits(self.connection, self.db_name[:-3], 'quit')
 
         self.quit_habit_name_labels = []
         self.quit_habit_count_labels = []
@@ -430,7 +441,7 @@ class SpartanGrid(GridLayout):
                     # disabled=True, 
                     background_disabled_normal='background_normal', 
                     background_color=[52/255, 110/255, 235/255, 0.5], #))
-                    on_press = partial(self.delete_quit_task_popup, i)))
+                    on_press = partial(self.edit_quit_task_popup, i)))
                 if (quit_allHabits[i][5] != quit_allHabits[i][6]):
                     self.quit_habit_count_labels.append(Button(
                         text=str(quit_allHabits[i][3]+1),  
@@ -451,7 +462,7 @@ class SpartanGrid(GridLayout):
                     # disabled=True, 
                     background_disabled_normal='background_normal', 
                     background_color=[52/255, 110/255, 235/255, 1],#))
-                    on_press = partial(self.delete_quit_task_popup, i)))
+                    on_press = partial(self.edit_quit_task_popup, i)))
                 
                 self.quit_habit_count_labels.append(Button(
                     text=str(quit_allHabits[i][3]),  
@@ -478,14 +489,148 @@ class SpartanGrid(GridLayout):
         self.quithomepage.open()
 
 
-    def delete_quit_task_popup(self, i, obj):
-        self.quithomepage.dismiss()
+    def edit_quit_task_popup(self, i, obj):
+        self.edit_quit_layout = GridLayout(cols=1, padding=[200,100,200,200])
+        print("the i associated with task", self.quit_habit_name_labels[i].text, " is: " + str(i))
+        self.edit_quit_popup = Popup(title="Edit a task", content = self.edit_quit_layout)
+        self.edit_quit_popup.pname = TextInput(text = self.quit_habit_name_labels[i].text, multiline = False, on_text_validate = partial(self.update_quit_task_name, i))
+        close_button = GridLayout(cols=6)
+        close_button.add_widget(Label())
+        close_button.add_widget(Label())
+        close_button.add_widget(Label())
+        close_button.add_widget(Label())
+        close_button.add_widget(Label())
+        close_button.add_widget(Button(text="x", size_hint_y=None, height=80, on_press = self.edit_quit_popup.dismiss))
+        edit_row = GridLayout(cols=2)
+        edit_row.add_widget(Button(text="Edit Task Name: ", disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color=[52/255, 110/255, 235/255, 0.5]))
+        edit_row.add_widget(self.edit_quit_popup.pname)
+        self.edit_quit_layout.add_widget(close_button)
+        self.edit_quit_layout.add_widget(edit_row)
+        self.edit_quit_layout.add_widget(Button(text="Save Changes", on_press = partial(self.update_quit_task_name, i), background_color=[52/255, 110/255, 235/255, 0.5]))
+        self.edit_quit_layout.add_widget(Button(text="Delete Task: " + self.quit_habit_name_labels[i].text, background_color = [253/255, 129/255, 129/255, 1], on_press = partial(self.delete_quit_task_action, i, self.connection)))
+        self.edit_quit_popup.open()
+        # self.quithomepage.dismiss()
 
-    def count_down_quit(self, xconnection, i):
-        self.quithomepage.dismiss()
+    def delete_quit_task_action(self, i, xconnection, obj):
+        delete_task_db(self.quit_habit_name_labels[i].text, xconnection)
+        if (self.quit_i-1) != (i):
+            self.quit_habit_name_labels[i+1].background_color = self.quit_habit_name_labels[i].background_color
+            self.quit_habit_count_labels[i+1].background_color = self.quit_habit_name_labels[i].background_color
+        # return SpartanGrid()
+        # self.remove_widget(self.new_task[i]) 
+        self.remove_widget(self.quit_habit_name_labels[i])
+        del self.quit_habit_name_labels[i]
+        self.remove_widget(self.quit_habit_count_labels[i])
+        del self.quit_habit_count_labels[i]
+        self.remove_widget(self.quit_max_streak_labels[i])
+        del self.quit_max_streak_labels[i]
+        self.remove_widget(self.quit_check_no_buttons[i])
+        del self.quit_check_no_buttons[i]
+        print(self.quit_i)
+        self.quit_i = self.quit_i - 1
+        print(self.quit_i)
+        self.quitting_vibes()
+        Clock.schedule_once(self.quithomepage.open, .5)
+        pass
+
+    def quitting_vibes(self):
+        # Clock.schedule_once(self.edit_quit_popup.dismiss, .5)
+        Clock.schedule_once(self.quithomepage.dismiss, .5)
+        # Clock.schedule_once(self.quithomepage.open, .5)
+        # self.quithomepage.dismiss()
+        # self.edit_quit_popup.dismiss()
+        # self.quithomepage.open()
+
+    def update_quit_task_name(self, i, obj):
+        update_name(self.edit_quit_popup.pname.text, self.quit_habit_name_labels[i].text, self.connection)
+        self.quit_habit_name_labels[i].text = self.edit_quit_popup.pname.text
+        self.close_popup_delete(obj)
+
+
+    def count_down_quit(self, xconnection, i, obj):
+        habit_list = get_habit_by_name(xconnection, self.quit_habit_name_labels[i].text)
+        last_mod_date = datetime.strptime((habit_list[0][5]), "%Y-%m-%d").date()
+        today = date.today()
+        if (today-last_mod_date).days != 0:
+            self.quit_habit_count_labels[i].text = "0"
+            update_count(0, self.quit_habit_name_labels[i].text, "quit", xconnection)
+            update_last_mod_date(self.quit_habit_name_labels[i].text, xconnection)
+            self.quit_check_no_buttons[i].text = "Try again tomorrow!"
+        else:
+            self.quit_check_no_buttons[i].text = "Try again tomorrow!"
+        # self.quithomepage.dismiss()
 
     def add_quit_popup(self, objs):
-        self.quithomepage.dismiss()
+        self.quit_add_layout = GridLayout(cols = 2, padding=[200, 200, 200, 200], rows_minimum={0:200})
+        self.quit_add_popup = Popup(title = "Add new task to quit", content = self.quit_add_layout)
+        self.quit_add_popup.pq_prompt = Button(
+                            text="Add Task",  
+                            disabled=True, 
+                            background_disabled_normal='background_normal', 
+                            background_color=[52/255, 110/255, 235/255, 0.5])
+        self.quit_add_layout.add_widget(self.quit_add_popup.pq_prompt)
+        self.quit_add_popup.pq_text = TextInput(hint_text = "Quit a habit", multiline = False, on_text_validate = partial(self.add_quit_task_new, self.connection))
+        self.quit_add_layout.add_widget(self.quit_add_popup.pq_text)
+        self.quit_add_popup.pq_button = Button(text = "Cancel", on_press = self.quit_add_popup.dismiss)
+        self.quit_add_layout.add_widget(self.quit_add_popup.pq_button)
+        self.quit_add_popup.pq_button_add = Button(text = "Add", on_press = partial(self.add_quit_task_new, self.connection))
+        self.quit_add_layout.add_widget(self.quit_add_popup.pq_button_add)
+        self.quit_add_popup.open()
+
+    def add_quit_task_new(self, xconnection, obj):
+        h3 = Habit(self.db_name[:-3],"quit", self.quit_add_popup.pq_text.text, 0, date.today(), date.today(), 0)
+        insert_habit(h3, xconnection)
+        new_quit = get_habit_by_name(xconnection, self.quit_add_popup.pq_text.text)
+        i = self.quit_i
+        if (i%2==0):
+            self.quit_habit_name_labels.append(Button(
+                text=str(new_quit[0][2]),  
+                # disabled=True, 
+                background_disabled_normal='background_normal', 
+                background_color=[52/255, 110/255, 235/255, 0.5], #))
+                on_press = partial(self.edit_quit_task_popup, i)))
+            if (new_quit[0][5] != new_quit[0][6]):
+                self.quit_habit_count_labels.append(Button(
+                    text=str(new_quit[0][3]+1),  
+                    disabled=True, 
+                    background_disabled_normal='atlas://data/images/defaulttheme/button', 
+                    background_color=[52/255, 110/255, 235/255, 0.5]))
+                # insert code to update db streak count 
+            else:
+                self.quit_habit_count_labels.append(Button(
+                    text=str(new_quit[0][3]),  
+                    disabled=True, 
+                    background_disabled_normal='atlas://data/images/defaulttheme/button', 
+                    background_color=[52/255, 110/255, 235/255, 0.5]))
+
+        else:
+            self.quit_habit_name_labels.append(Button(
+                text=str(new_quit[0][2]),  
+                # disabled=True, 
+                background_disabled_normal='background_normal', 
+                background_color=[52/255, 110/255, 235/255, 1],#))
+                on_press = partial(self.edit_quit_task_popup, i)))
+            
+            self.quit_habit_count_labels.append(Button(
+                text=str(new_quit[0][3]),  
+                disabled=True, 
+                background_disabled_normal='atlas://data/images/defaulttheme/button', 
+                background_color=[52/255, 110/255, 235/255, 1]))
+ 
+            self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(new_quit[0][6]) + "\n Earned on: " + str(new_quit[0][5]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
+            self.quit_check_no_buttons.append(Button(text = "fuckied it up :(", on_press = partial(self.count_down_quit, self.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
+
+            # self.quit_task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
+            self.quitlayout.add_widget(self.quit_habit_name_labels[i])
+            self.quitlayout.add_widget(self.quit_habit_count_labels[i])
+            self.quitlayout.add_widget(self.quit_max_streak_labels[i])
+            self.quitlayout.add_widget(self.quit_check_no_buttons[i])
+        self.quit_i = self.quit_i + 1
+
+
+
+        self.quit_add_popup.dismiss()
+    
 
     def count_up_by_days(self, xconnection, ind, instance):
         name = self.quit_habit_name_labels[ind].text
@@ -493,7 +638,7 @@ class SpartanGrid(GridLayout):
         last_mod_date = datetime.strptime((habit_list[0][5]), "%Y-%m-%d").date()
         # category = habit_list[0][2]
         today = date.today()
-        print((today-last_mod_date).days)
+        # print((today-last_mod_date).days)
         if (today-last_mod_date).days != 0:
             self.quit_habit_count_labels[ind].text = str((today-last_mod_date).days)
             update_count(self.quit_habit_count_labels[ind].text, name, 'quit', xconnection)
@@ -501,7 +646,8 @@ class SpartanGrid(GridLayout):
             self.quit_habit_count_labels[ind].text = str(habit_list[0][3])
         
         if (today-last_mod_date).days >= habit_list[0][6]:
-            self.quit_max_streak_labels[ind].text = "       Max Streak: " + str((today-last_mod_date).days) + "\n Earned on: " + str(date.today())
+            self.quit_max_streak_labels[ind].text = "       Max Streak: " + str((today-last_mod_date).days) + "\n Earned on: " + str(date.today()) #+ "\n Last started on: " + habit_list[0][5]
+            update_max_count((today-last_mod_date).days, self.quit_habit_name_labels[ind].text, "quit", xconnection)
         pass
 
 

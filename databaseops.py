@@ -81,6 +81,10 @@ def update_count(count, name, category, conn):
     conn.cursor().execute("UPDATE habitlist SET count = :count WHERE name = :name AND category=:category", {'count': count, 'name': name, 'category':category})
     conn.commit()
 
+def update_max_count(max_quit_count, name, category, conn):
+    conn.cursor().execute("UPDATE habitlist SET max_quit_count = :max_quit_count WHERE name = :name AND category=:category", {'max_quit_count': max_quit_count, 'name': name, 'category':category})
+    conn.commit()
+
 def update_name(newname, name, conn):
     conn.cursor().execute("UPDATE habitlist SET name = :newname WHERE name = :name", {'newname': newname, 'name': name})
     conn.commit()
