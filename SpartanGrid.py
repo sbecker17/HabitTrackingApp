@@ -371,7 +371,8 @@ class SpartanGrid(GridLayout):
         # self.popup_delete.dismiss()
 
     def loading_close_popup(self, obj):
-        playout4 = FloatLayout()
+        playout4 = GridLayout(cols=1, padding=[300,450,300,450])
+        # playout4 = FloatLayout()
         self.popup_lc = Popup(title="Loading", content = playout4)
         self.popup_lc.pcloser =  Button(text = "Loading...", disabled=True, background_disabled_normal='background_normal', background_color=[52/255, 110/255, 235/255, 0.5])
         playout4.add_widget(self.popup_lc.pcloser)
