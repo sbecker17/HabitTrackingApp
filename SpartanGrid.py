@@ -14,10 +14,25 @@ from databaseops import *
 from homepagebuttonfuncs import *
 from functools import partial 
 from kivy.clock import Clock
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 
-class SpartanGrid(GridLayout):
+import kivy
+kivy.require('1.0.6')
 
-    def __init__(self, db, **kwargs):    #, **kwargs
+from kivy.app import App
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.dropdown import DropDown
+from kivy.base import runTouchApp
+from kivy.uix.behaviors.focus import FocusBehavior
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
+from kivy.uix.widget import Widget
+
+class SpartanGrid(GridLayout, Screen):
+
+    def __init__(self, **kwargs):    #, **kwargs
 
         super(SpartanGrid, self).__init__()
         self.cols=1
