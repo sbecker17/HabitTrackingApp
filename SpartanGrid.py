@@ -470,8 +470,11 @@ class SpartanGrid(GridLayout):
                     disabled=True, 
                     background_disabled_normal='atlas://data/images/defaulttheme/button', 
                     background_color=[52/255, 110/255, 235/255, 1]))
- 
-            self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(quit_allHabits[i][6]) + "\n Earned on: " + str(quit_allHabits[i][5]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
+            if (quit_allHabits[i][6]<= quit_allHabits[i][3]):
+                self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(quit_allHabits[i][6]) + "\n Earned on: " + str(date.today()), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
+            else:
+                self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(quit_allHabits[i][6]) + "\n Earned on: " + str(quit_allHabits[i][5]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
+            #### still need to fix earned on date
             self.quit_check_no_buttons.append(Button(text = "fuckied it up :(", on_press = partial(self.count_down_quit, self.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
 
             # self.quit_task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
@@ -530,8 +533,9 @@ class SpartanGrid(GridLayout):
         print(self.quit_i)
         self.quit_i = self.quit_i - 1
         print(self.quit_i)
-        self.quitting_vibes()
-        Clock.schedule_once(self.quithomepage.open, .5)
+        Clock.schedule_once(self.edit_quit_popup.dismiss, .5)
+        # self.quitting_vibes()
+        # Clock.schedule_once(self.quithomepage.open, .5)
         pass
 
     def quitting_vibes(self):
@@ -617,8 +621,13 @@ class SpartanGrid(GridLayout):
                 disabled=True, 
                 background_disabled_normal='atlas://data/images/defaulttheme/button', 
                 background_color=[52/255, 110/255, 235/255, 1]))
+
+            if (new_quit[0][6]<= new_quit[0][3]):
+                self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(new_quit[0][6]) + "\n Earned on: " + str(date.today()), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
+            else:
+                self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(new_quit[0][6]) + "\n Earned on: " + str(new_quit[0][5]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
  
-            self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(new_quit[0][6]) + "\n Earned on: " + str(new_quit[0][5]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
+            # self.quit_max_streak_labels.append(Button(text = "       Max Streak: " + str(new_quit[0][6]) + "\n Earned on: " + str(new_quit[0][5]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
             self.quit_check_no_buttons.append(Button(text = "fuckied it up :(", on_press = partial(self.count_down_quit, self.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
 
             # self.quit_task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
