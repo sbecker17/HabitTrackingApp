@@ -156,11 +156,14 @@ class Login(Screen):
                 var_red_btn.append(Button(text = "Didn't", on_press = partial(var_red_btn_fn, DailyHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
                 self.task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
             elif hab_category == "quit":
-                if (allHabits[0][6]<= allHabits[0][3]):
+                if (allHabits[i][6]<= allHabits[i][3]):
                     var_green_btn.append(Button(text = "       Max Streak: " + str(allHabits[0][6]) + "\n Earned on: " + str(date.today()), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
                 else:
-                    var_green_btn.append(Button(text = "       Max Streak: " + str(allHabits[0][6]) + "\n Earned on: " + str(allHabits[0][5]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
-                var_red_btn.append(Button(text = "fuckied it up :(", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
+                    var_green_btn.append(Button(text = "       Max Streak: " + str(allHabits[0][6]) + "\n Earned on: " + str(allHabits[0][7]), disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color = [169/255,255/255,221/255,.5]))
+                if (allHabits[i][5] == str(date.today())):
+                    var_red_btn.append(Button(text = "Try again tomorrow!", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
+                else:
+                    var_red_btn.append(Button(text = "fuckied it up :(", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
                 self.task=GridLayout(rows=2, cols_minimum={0:200, 1:200})
 
             self.task.add_widget(var_name_labels[i])
@@ -292,10 +295,12 @@ class DailyHab(Screen):
                 DailyHab.check_yes_buttons[ind].text = "Done!"
                 update_count(DailyHab.habit_count_labels[ind].text, name, category, xconnection)
                 update_last_mod_date(name, xconnection)
+                update_max_earn_date(name, xconnection)
 
     def count_down_new(self, xconnection, ind, instance):
         name = DailyHab.habit_name_labels[ind].text
         DailyHab.habit_count_labels[ind].text = str(0)
+        DailyHab.check_yes_buttons[ind].disabled = True
         update_count(0, name, 'continue', xconnection)
         pass
 
@@ -419,9 +424,15 @@ class QuittingHab(Screen):
         if (today-last_mod_date).days >= habit_list[0][6]:
             QuittingHab.quit_max_streak_labels[ind].text = "       Max Streak: " + str((today-last_mod_date).days) + "\n Earned on: " + str(date.today()) #+ "\n Last started on: " + habit_list[0][5]
             update_max_count((today-last_mod_date).days, QuittingHab.quit_habit_name_labels[ind].text, "quit", xconnection)
+            update_max_earn_date(QuittingHab.quit_habit_name_labels[ind].text, xconnection)
+        else:
+            QuittingHab.quit_max_streak_labels[ind].text = "       Max Streak: " + str(habit_list[0][6]) + "\n Earned on: " + str(habit_list[0][7]) 
+            
         pass
 
     def go_back(self, obj):
+        run_build_task = partial(Login.build_tasks, Login, "continue", obj)
+        run_build_task()
         self.manager.transition.direction = "right"
         self.manager.current = "daily_hab"
 

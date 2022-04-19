@@ -24,7 +24,8 @@ def create_habit_table(conn):
                             count integer,
                             start_date date,
                             last_modified_date date,
-                            max_quit_count integer
+                            max_quit_count integer,
+                            max_earn_date date
                             )"""
                          )
     conn.commit()
@@ -32,8 +33,8 @@ def create_habit_table(conn):
 def insert_habit(hab, conn):
     c = conn.cursor()
     with conn:
-        c.execute("INSERT INTO habitlist(username, category, name, count, start_date, last_modified_date, max_quit_count) VALUES (:username, :category, :name, :count, :start_date, :last_modified_date, :max_quit_count)",
-        {'username': hab.username, 'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date, 'last_modified_date':hab.last_modified_date, 'max_quit_count':hab.max_quit_count})
+        c.execute("INSERT INTO habitlist(username, category, name, count, start_date, last_modified_date, max_quit_count, max_earn_date) VALUES (:username, :category, :name, :count, :start_date, :last_modified_date, :max_quit_count, :max_earn_date)",
+        {'username': hab.username, 'category': hab.category, 'name': hab.name, 'count':hab.count, 'start_date':hab.start_date, 'last_modified_date':hab.last_modified_date, 'max_quit_count':hab.max_quit_count, 'max_earn_date': date.today()})
     conn.commit()
 
 def get_all_habits(conn, username, category):
@@ -64,6 +65,10 @@ def update_name(newname, name, conn):
 
 def update_last_mod_date(name, conn):
     conn.cursor().execute("UPDATE habitlist SET last_modified_date = :newdate WHERE name = :name", {'newdate': date.today(), 'name': name})
+    conn.commit()
+
+def update_max_earn_date(name, conn):
+    conn.cursor().execute("UPDATE habitlist SET max_earn_date = :newdate WHERE name = :name", {'newdate': date.today(), 'name': name})
     conn.commit()
 
 def delete_task_db(name, conn):
