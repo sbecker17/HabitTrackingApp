@@ -188,7 +188,7 @@ class DailyHab(Screen):
         self.ids.grid1.padding=[50,50,50,50]
 
         header = Button(
-            text="Habit Tracker", 
+            text="Habit Tracker for " + Login.inp_login.text, 
             font_size="35sp", 
             disabled=True, 
             background_disabled_normal='background_normal', 
@@ -315,7 +315,7 @@ class QuittingHab(Screen):
         self.ids.grid2.padding=[50,50,50,50]
 
         header = Button(
-            text="Quitting Tracker", 
+            text="Quitting Tracker for " + Login.inp_login.text, 
             font_size="35sp", 
             disabled=True, 
             background_disabled_normal='background_normal', 
