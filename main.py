@@ -200,14 +200,14 @@ class DailyHab(Screen):
 
         self.ids.grid1.add_widget(DailyHab.header)
         
-        self.homepage=GridLayout(cols=3)
+        self.homepage=GridLayout(cols=2)
 
         self.homepage.press = Button(text="Add Task")
         self.homepage.press.bind(on_press=self.show_popup)
         self.homepage.add_widget(self.homepage.press)
 
-        self.homepage.press = Button(text="View Weekly Habs", on_press=partial(Login.build_tasks, Login, "weekly"), on_release=self.show_quitting_popup)
-        self.homepage.add_widget(self.homepage.press)
+        # self.homepage.press = Button(text="View Weekly Habs", on_press=partial(Login.build_tasks, Login, "weekly"), on_release=self.show_quitting_popup)
+        # self.homepage.add_widget(self.homepage.press)
 
         self.homepage.press = Button(text="View Quitting", on_press=partial(Login.build_tasks, Login, "quit"), on_release=self.show_quitting_popup)
         self.homepage.add_widget(self.homepage.press)
