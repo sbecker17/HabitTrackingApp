@@ -14,7 +14,7 @@ kivy.require('1.0.6')
 class LoginPage(GridLayout, Screen):
     def __init__(self, **kwargs):
     # def build(self):
-        super(LoginPage, self).__init__()
+        super(LoginPage, self).__init__(**kwargs)
         self.cols=2
         self.padding=[50,50,50,50]
 
