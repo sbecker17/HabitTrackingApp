@@ -155,7 +155,7 @@ class Login(Screen):
                     var_green_btn[i].text = "Done!"
                     var_green_btn[i].disabled = True
                     var_green_btn[i].background_color = [169/255,255/255,221/255,1]
-                var_red_btn.append(Button(text = "Didn't", on_press = partial(var_red_btn_fn, DailyHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
+                var_red_btn.append(Button(text = "Not today", on_press = partial(var_red_btn_fn, DailyHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
                 self.task=GridLayout(rows=1, cols_minimum={0:200, 1:200})
             elif hab_category == "quit":
                 if (allHabits[i][6]<= allHabits[i][3]):
@@ -165,7 +165,7 @@ class Login(Screen):
                 if (allHabits[i][5] == str(date.today())):
                     var_red_btn.append(Button(text = "Try again tomorrow!", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
                 else:
-                    var_red_btn.append(Button(text = "fuckied it up :(", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
+                    var_red_btn.append(Button(text = "I backtracked", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
                 self.task=GridLayout(rows=2, cols_minimum={0:200, 1:200})
 
             self.task.add_widget(var_name_labels[i])
