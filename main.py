@@ -31,11 +31,9 @@ kivy.require('1.0.0')
 
 Builder.load_string("""
 <Login>:
-
 <DailyHab>:
     GridLayout:
         id: grid1
-
 <QuittingHab>:
     GridLayout:
         id: grid2
@@ -47,7 +45,7 @@ Builder.load_string("""
 class Login(Screen):
     def __init__(self, **kwargs):
         super(Login, self).__init__(**kwargs)
-        login_layout = GridLayout(cols=2, padding = [50,50,50,50])
+        login_layout = GridLayout(cols=2, padding = [300,400,300,400])
         Login.inp_login = TextInput(hint_text="Enter username", multiline=False, write_tab=False, on_text_validate = partial(self.run_login))
         login_btn = Button(text = "Login", on_release=partial(self.run_login))#, on_press=partial(self.build_tasks, "continue"))
         login_layout.add_widget(Login.inp_login)
@@ -166,7 +164,7 @@ class Login(Screen):
                     var_red_btn.append(Button(text = "Try again tomorrow!", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
                 else:
                     var_red_btn.append(Button(text = "I backtracked", on_press = partial(var_red_btn_fn, QuittingHab, Login.connection, i), background_color = [253/255, 129/255, 129/255, 1]))
-                self.task=GridLayout(rows=2, cols_minimum={0:200, 1:200})
+                self.task=GridLayout(rows=1, cols_minimum={0:100, 1:100})
 
             self.task.add_widget(var_name_labels[i])
             self.task.add_widget(var_count_labels[i])
@@ -263,7 +261,7 @@ class DailyHab(Screen):
         close_button.add_widget(Label())
         close_button.add_widget(Button(text="x", size_hint_y=None, height=80, on_press = self.edit_task_popup.dismiss))
         edit_row = GridLayout(cols=2)
-        edit_row.add_widget(Button(text="Edit Task Name: ", disabled=True, background_disabled_normal='atlas://data/images/defaulttheme/button', background_color=[52/255, 110/255, 235/255, 0.5]))
+        edit_row.add_widget(Button(text="Edit Task Name: ", disabled=True, background_disabled_normal='background_normal', background_color=[52/255, 110/255, 235/255, 0.5]))
         edit_row.add_widget(self.edit_task_popup.pname)
         self.edit_task_layout.add_widget(close_button)
         self.edit_task_layout.add_widget(edit_row)
