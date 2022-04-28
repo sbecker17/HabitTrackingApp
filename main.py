@@ -5,6 +5,7 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import SlideTransition
+from kivy.core.window import Window
 from kivy.app import App
 from numpy import roots
 from kivy.core.window import Window
@@ -51,6 +52,10 @@ class Login(Screen):
         login_layout.add_widget(Login.inp_login)
         login_layout.add_widget(login_btn)
         self.add_widget(login_layout)
+        Clock.schedule_once(Login.show_keyboard)
+
+    def show_keyboard(event):
+        Login.inp_login.focus = True
 
     def run_login(self, obj):
         run_build_task = partial(Login.build_tasks, Login, "continue", 0)
