@@ -47,7 +47,7 @@ class Login(Screen):
     def __init__(self, **kwargs):
         super(Login, self).__init__(**kwargs)
         login_layout = GridLayout(cols=2, padding = [300,400,300,400])
-        Login.inp_login = TextInput(hint_text="Enter username", multiline=False, write_tab=False, on_text_validate = partial(self.run_login))
+        Login.inp_login = TextInput(hint_text="Enter username", multiline=False, write_tab=False, on_text_validate = partial(self.run_login))#, size_hint=(.6,.4))
         login_btn = Button(text = "Login", on_release=partial(self.run_login))#, on_press=partial(self.build_tasks, "continue"))
         login_layout.add_widget(Login.inp_login)
         login_layout.add_widget(login_btn)
@@ -203,14 +203,15 @@ class DailyHab(Screen):
 
         self.ids.grid1.add_widget(DailyHab.header)
         
-        self.homepage=GridLayout(cols=2)
+        self.homepage=GridLayout(cols=3) #2
+
+        self.homepage.press = Button(text="Switch Users", on_release=self.new_login) #on_press=partial(Login.build_tasks, Login, "weekly"), 
+        self.homepage.press.background_color = [22/255, 48/255, 102/255, 0.5]
+        self.homepage.add_widget(self.homepage.press)
 
         self.homepage.press = Button(text="Add Task")
         self.homepage.press.bind(on_press=self.show_popup)
         self.homepage.add_widget(self.homepage.press)
-
-        # self.homepage.press = Button(text="View Weekly Habs", on_press=partial(Login.build_tasks, Login, "weekly"), on_release=self.show_quitting_popup)
-        # self.homepage.add_widget(self.homepage.press)
 
         self.homepage.press = Button(text="View Quitting", on_press=partial(Login.build_tasks, Login, "quit"), on_release=self.show_quitting_popup)
         self.homepage.add_widget(self.homepage.press)
@@ -224,6 +225,12 @@ class DailyHab(Screen):
         DailyHab.check_no_buttons = []
         DailyHab.i=0
         DailyHab.quit_i=0    
+
+    def new_login(self,obj):
+        Login.inp_login.text = ""
+        self.manager.transition.direction = "right"
+        self.manager.current = "login"
+        pass
 
     def show_popup(self, obj):
         playout = GridLayout(cols = 2, padding=[200, 200, 200, 200], rows_minimum={0:200})
