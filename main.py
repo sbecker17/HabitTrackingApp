@@ -230,14 +230,14 @@ class DailyHab(Screen):
 
     def new_login_popup(self,obj):
         playout1 = GridLayout(cols = 1, padding=[100, 100, 100, 100], rows_minimum={0:200})
-        self.logout_popup = Popup(title = "Log out", content = playout1)
-        self.logout_popup.plabel = Label(text="Change users?")
-        self.logout_popup.logout = Button(text = "Yes, log out", background_color = [169/255,255/255,221/255,1], on_press = partial(self.new_login), on_release = self.logout_popup.dismiss)
-        self.logout_popup.no = Button(text = "No, go back", background_color = [253/255, 129/255, 129/255, 1], on_press = self.logout_popup.dismiss)
-        playout1.add_widget(self.logout_popup.plabel)
-        playout1.add_widget(self.logout_popup.logout)
-        playout1.add_widget(self.logout_popup.no)
-        self.logout_popup.open()
+        DailyHab.logout_popup = Popup(title = "Log out", content = playout1)
+        DailyHab.logout_popup.plabel = Label(text="Change users?")
+        DailyHab.logout_popup.logout = Button(text = "Yes, log out", background_color = [169/255,255/255,221/255,1], on_press = partial(DailyHab.new_login, self), on_release = DailyHab.logout_popup.dismiss)
+        DailyHab.logout_popup.no = Button(text = "No, go back", background_color = [253/255, 129/255, 129/255, 1], on_press = DailyHab.logout_popup.dismiss)
+        playout1.add_widget(DailyHab.logout_popup.plabel)
+        playout1.add_widget(DailyHab.logout_popup.logout)
+        playout1.add_widget(DailyHab.logout_popup.no)
+        DailyHab.logout_popup.open()
 
     def new_login(self,obj):
         Login.inp_login.text = ""
