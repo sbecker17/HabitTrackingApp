@@ -47,7 +47,7 @@ class Login(Screen):
     def __init__(self, **kwargs):
         super(Login, self).__init__(**kwargs)
         login_layout = GridLayout(cols=2, padding = [300,400,300,400])
-        Login.inp_login = TextInput(hint_text="Enter username", multiline=False, write_tab=False, on_text_validate = partial(self.run_login))
+        Login.inp_login = TextInput(hint_text="Enter username", multiline=False, write_tab=False, on_text_validate = partial(self.run_login))#, size_hint=(.6,.4))
         login_btn = Button(text = "Login", on_release=partial(self.run_login))#, on_press=partial(self.build_tasks, "continue"))
         login_layout.add_widget(Login.inp_login)
         login_layout.add_widget(login_btn)
@@ -64,7 +64,7 @@ class Login(Screen):
         self.manager.current = "daily_hab"
 
     def build_tasks(self, category, obj):
-        Login.db_name = Login.inp_login.text + ".db"
+        Login.db_name = Login.inp_login.text.lower() + ".db"
         Login.connection = create_connection(Login.db_name)
         create_habit_table(Login.connection)
         allHabits = get_all_habits(Login.connection, Login.db_name[:-3], category)
@@ -177,11 +177,11 @@ class Login(Screen):
             self.task.add_widget(var_red_btn[i])
             var_task_layouts.append(self.task)
             if hab_category == "continue":
-                DailyHab.header.text="Habit Tracker for " + Login.db_name[:-3]
+                DailyHab.header.text="Habit Tracker for " + Login.inp_login.text
                 ScnMgrApp.root.get_screen("daily_hab").ids.grid1.add_widget(self.task)
                 DailyHab.i = DailyHab.i+1
             elif hab_category == "quit":
-                QuittingHab.header.text="Quitting Tracker for " + Login.db_name[:-3]
+                QuittingHab.header.text="Quitting Tracker for " + Login.inp_login.text
                 ScnMgrApp.root.get_screen("quitting_hab").ids.grid2.add_widget(self.task)
                 new_counts = partial(QuittingHab.count_up_by_days, QuittingHab, Login.connection, i)
                 new_counts(i)
@@ -197,20 +197,23 @@ class DailyHab(Screen):
         DailyHab.header = Button(
             text="Habit Tracker", 
             font_size="35sp", 
-            disabled=True, 
-            background_disabled_normal='background_normal', 
+            # disabled=True, 
+            # background_disabled_normal='background_normal',
+            on_press = partial(DailyHab.new_login_popup,self),
+            background_normal = 'background_normal', 
             background_color=[52/255, 110/255, 235/255, 0.5])
 
         self.ids.grid1.add_widget(DailyHab.header)
         
-        self.homepage=GridLayout(cols=2)
+        self.homepage=GridLayout(cols=2) 
+
+        # self.homepage.press = Button(text="Switch Users", on_release=self.new_login_popup) #on_press=partial(Login.build_tasks, Login, "weekly"), 
+        # self.homepage.press.background_color = [22/255, 48/255, 102/255, 0.5]
+        # self.homepage.add_widget(self.homepage.press)
 
         self.homepage.press = Button(text="Add Task")
         self.homepage.press.bind(on_press=self.show_popup)
         self.homepage.add_widget(self.homepage.press)
-
-        # self.homepage.press = Button(text="View Weekly Habs", on_press=partial(Login.build_tasks, Login, "weekly"), on_release=self.show_quitting_popup)
-        # self.homepage.add_widget(self.homepage.press)
 
         self.homepage.press = Button(text="View Quitting", on_press=partial(Login.build_tasks, Login, "quit"), on_release=self.show_quitting_popup)
         self.homepage.add_widget(self.homepage.press)
@@ -224,6 +227,25 @@ class DailyHab(Screen):
         DailyHab.check_no_buttons = []
         DailyHab.i=0
         DailyHab.quit_i=0    
+
+    def new_login_popup(self,obj):
+        playout1 = GridLayout(cols = 1, padding=[100, 100, 100, 100], rows_minimum={0:200})
+        self.logout_popup = Popup(title = "Log out", content = playout1)
+        self.logout_popup.plabel = Label(text="Change users?")
+        self.logout_popup.logout = Button(text = "Yes, log out", background_color = [169/255,255/255,221/255,1], on_press = partial(self.new_login), on_release = self.logout_popup.dismiss)
+        self.logout_popup.no = Button(text = "No, go back", background_color = [253/255, 129/255, 129/255, 1], on_press = self.logout_popup.dismiss)
+        playout1.add_widget(self.logout_popup.plabel)
+        playout1.add_widget(self.logout_popup.logout)
+        playout1.add_widget(self.logout_popup.no)
+        self.logout_popup.open()
+
+    def new_login(self,obj):
+        Login.inp_login.text = ""
+        self.manager.transition.direction = "right"
+        self.manager.current = "login"
+        Clock.schedule_once(Login.show_keyboard)
+        
+        
 
     def show_popup(self, obj):
         playout = GridLayout(cols = 2, padding=[200, 200, 200, 200], rows_minimum={0:200})
@@ -327,13 +349,20 @@ class QuittingHab(Screen):
         QuittingHab.header = Button(
             text="Quitting Tracker", 
             font_size="35sp", 
-            disabled=True, 
-            background_disabled_normal='background_normal', 
+            # disabled=True, 
+            # background_disabled_normal='background_normal',
+            on_press = partial(DailyHab.new_login_popup, self),
+            background_normal = 'background_normal', 
             background_color=[52/255, 110/255, 235/255, 0.5])
 
         self.ids.grid2.add_widget(QuittingHab.header)
 
         self.homepage=GridLayout(cols=2)
+
+        # self.homepage.press = Button(text="Switch Users", on_release=self.new_login) #on_press=partial(Login.build_tasks, Login, "weekly"), 
+        # self.homepage.press.background_color = [22/255, 48/255, 102/255, 0.5]
+        # self.homepage.press.background_normal='background_normal'
+        # self.homepage.add_widget(self.homepage.press)
 
         self.homepage.press = Button(text="Add Quitting Task")
         self.homepage.press.bind(on_press=self.add_quit_popup)
